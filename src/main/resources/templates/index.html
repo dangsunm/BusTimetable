@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="header-footer.html :: head"></head>
+<nav th:replace="navbar.html :: navbar"></nav>
+<body class="bg-light">
+<section class="jumbotron text-center bg-image" style="background-image: url('/images/main_bg.jpg'); height: 100vh;">
+    <div class="container text-white">
+        <h1 class="font-weight-bold">우리동네 버스 시간표</h1>
+        <p>태그와 지역 기반으로 우리동네 버스 시간표를 쉽게 찾아보세요 <br />여러분과 함께 만들어 나갑니다.</p>
+
+        <form class="form-inline input-group input-group-lg" >
+            <input type="text" class="form-control"  placeholder="Search" aria-label="Search">
+            <button type="button" class="btn btn-primary">찾아보기</button>
+        </form>
+
+    </div>
+</section>
+<footer th:replace="header-footer.html :: footer"></footer>
+</body>
+</html>
