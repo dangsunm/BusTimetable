@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:th="http://www.thymeleaf.org">
 <head th:replace="header-footer.html :: head"></head>
 <nav th:replace="navbar.html :: navbar"></nav>
 <body>
 <div class="container">
     <div class="py-5 text-center">
-        <p class="lead">스터디올래</p>
         <h2>로그인</h2>
     </div>
     <div class="row justify-content-center">
@@ -24,9 +22,6 @@
                 <label for="username">이메일</label>
                 <input id="username" type="text" name="username" class="form-control"
                        placeholder="your@email.com" aria-describedby="emailHelp" required>
-                <small id="emailHelp" class="form-text text-muted">
-                    가입할 때 사용한 이메일을 입력하세요.
-                </small>
                 <small class="invalid-feedback">이메일을 입력하세요.</small>
             </div>
             <div class="form-group">
@@ -48,7 +43,7 @@
                 <button class="btn btn-success btn-block" type="submit"
                         aria-describedby="submitHelp">로그인</button>
                 <small id="submitHelp" class="form-text text-muted">
-                    스터디올래에 처음 오신거라면 <a href="#" th:href="@{/sign-up}">계정을 먼저 만드세요.</a>
+                    <a href="#" th:href="@{/sign-up}">계정 만들기</a> | <a href="#" th:href="@{/lost-password}">비밀번호를 잊어먹으셨나요?</a>
                 </small>
             </div>
         </form>

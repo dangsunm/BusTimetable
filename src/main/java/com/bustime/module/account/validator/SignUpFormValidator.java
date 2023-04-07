@@ -1,5 +1,6 @@
-package com.bustime.module.account;
+package com.bustime.module.account.validator;
 
+import com.bustime.module.account.AccountRepository;
 import com.bustime.module.account.form.SignUpForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -33,9 +33,9 @@
           <span sec:authentication="name">Username</span>
         </a>
         <div class="dropdown-menu">
-          <p class="dropdown-item"><span sec:authentication="name">Username</span></p>
+          <a class="dropdown-item" th:href="@{'/profile/' + ${#authentication.name}}">프로필</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">프로필 편집</a>
+          <a class="dropdown-item" th:href="@{'/settings/account'}">프로필 편집</a>
           <form class="form-inline my-2 my-lg-0" action="#" th:action="@{/logout}" method="post">
             <button class="dropdown-item" type="submit">로그아웃</button>
           </form>

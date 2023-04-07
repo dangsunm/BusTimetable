@@ -59,7 +59,6 @@ public class AccountService implements UserDetailsService {
         return newAccount;
     }
 
-
     public void sendSignUpConfirmEmail(Account newAccount) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(newAccount.getEmail());
@@ -74,4 +73,21 @@ public class AccountService implements UserDetailsService {
         login(account);
     }
 
+    public Account getAccount(String username) {
+        Account account = accountRepository.findByUsername(username);
+        if (account == null) {
+            throw new IllegalArgumentException(username + "에 해당하는 사용자가 없습니다.");
+        }
+        return account;
+    }
+
+    public void updatePassword(Account account, String newPassword) {
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+    }
+
+    public void updateUserName(Account account, String username) {
+        account.setUsername(username);
+        accountRepository.save(account);
+    }
 }

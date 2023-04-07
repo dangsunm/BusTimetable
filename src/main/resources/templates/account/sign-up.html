@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:th="http://www.thymeleaf.org">
 <head th:replace="header-footer.html :: head"></head>
 <nav th:replace="navbar.html :: navbar"></nav>
 <body class="bg-light">
@@ -28,9 +27,6 @@
                     <label for="email">이메일</label>
                     <input id="email" type="email" th:field="*{email}" class="form-control"
                            placeholder="your@email.com" aria-describedby="emailHelp" required>
-                    <small id="emailHelp" class="form-text text-muted">
-                        스터디올래는 사용자의 이메일을 공개하지 않습니다.
-                    </small>
                     <small class="invalid-feedback">이메일을 입력하세요.</small>
                     <small class="form-text text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</small>
                 </div>
@@ -58,27 +54,5 @@
     </div>
 </body>
 <footer th:replace="header-footer.html :: footer"></footer>
-
-<script type="application/javascript" th:fragment="form-validation">
-    (function () {
-        'use strict';
-
-        window.addEventListener('load', function () {
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            var forms = document.getElementsByClassName('needs-validation');
-
-            // Loop over them and prevent submission
-            Array.prototype.filter.call(forms, function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (form.checkValidity() === false) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated')
-                }, false)
-            })
-        }, false)
-    }())
-</script>
-
+<script th:replace="fragments.html :: form-validation"></script>
 </html>
