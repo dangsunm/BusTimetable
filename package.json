@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "nodejs": "^0.0.0"
+    "nodejs": "^0.0.0",
+    "tagify": "^0.1.1"
   }
 }

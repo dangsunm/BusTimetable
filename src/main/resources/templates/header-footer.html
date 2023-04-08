@@ -10,10 +10,70 @@
   <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:300,400,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="/node_modules/font-awesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="/node_modules/summernote/dist/summernote-bs4.min.css">
+  <link rel="stylesheet" href="/node_modules/@yaireo/tagify/dist/tagify.css">
   <script src="/node_modules/jquery/dist/jquery.min.js"></script>
   <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/node_modules/jdenticon/dist/jdenticon.min.js"></script>
   <style>
+    .container {
+      max-width: 100%;
+    }
+
+    .tagify-outside{
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+
+    #study-logo {
+      height: 200px;
+      width: 100%;
+      overflow: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    #study-logo img {
+      height: auto;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    }
+
+    body,
+    input,
+    button,
+    select,
+    optgroup,
+    textarea,
+    .tooltip,
+    .popover {
+      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    }
+
+    table th {
+      font-weight: lighter;
+    }
+
+    mark {
+      padding: 0;
+      background: transparent;
+      background: linear-gradient(to right, #f0ad4e 50%, transparent 50%);
+      background-position: right bottom;
+      background-size: 200% 100%;
+      transition: all .5s ease;
+      color: #fff;
+    }
+
+    mark.animate {
+      background-position: left bottom;
+      color: #000;
+    }
+
     .jumbotron {
       padding-top: 3rem;
       padding-bottom: 3rem;

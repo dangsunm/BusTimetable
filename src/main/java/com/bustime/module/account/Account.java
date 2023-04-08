@@ -1,19 +1,19 @@
 package com.bustime.module.account;
 
+import com.bustime.module.Tag.Tag;
+import com.bustime.module.zone.Zone;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Getter @Setter @EqualsAndHashCode(of = "id")
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder @AllArgsConstructor @NoArgsConstructor
 public class Account {
     @Id
     @GeneratedValue
@@ -37,6 +37,12 @@ public class Account {
 
     private LocalDateTime emailCheckTokenGeneratedAt;
 
+    @ManyToMany
+    private Set<Tag> tags = new HashSet<>();
+
+    @ManyToMany
+    private Set<Zone> zones = new HashSet<>();
+
     public void generateEmailCheckToken() {
         this.emailCheckToken = UUID.randomUUID().toString();
         this.emailCheckTokenGeneratedAt = LocalDateTime.now();
@@ -55,5 +61,6 @@ public class Account {
         this.emailVerified = true;
         this.joinedAt = LocalDateTime.now();
     }
+
 
 }

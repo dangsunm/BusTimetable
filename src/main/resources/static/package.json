@@ -9,8 +9,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@yaireo/tagify": "^4.17.7",
     "bootstrap": "^4.6.2",
     "font-awesome": "^4.7.0",
-    "jquery": "^3.6.4"
+    "jquery": "^3.6.4",
+    "summernote": "^0.8.20"
   }
 }
