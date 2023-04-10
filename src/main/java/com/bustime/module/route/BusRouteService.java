@@ -37,7 +37,7 @@ public class BusRouteService {
     }
 
     public void updateRouteInfo(BusRoute route, BusRouteForm busRouteForm) {
-        modelMapper.map (route,busRouteForm);
+        modelMapper.map(busRouteForm, route);
 //        eventPublisher.publishEvent(new BusRouteUpdateEvent(route, "스터디 소개를 수정했습니다."));
     }
 
@@ -51,5 +51,12 @@ public class BusRouteService {
         if (route == null) {
             throw new IllegalArgumentException("버스 노선이 존재하지 않습니다.");
         }
+    }
+
+    public void removeRoute(BusRoute route) {
+        if (route == null) {
+            throw new IllegalArgumentException("버스 노선이 존재하지 않습니다.");
+        }
+        busRouteRepository.delete(route);
     }
 }

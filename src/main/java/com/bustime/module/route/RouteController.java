@@ -80,4 +80,11 @@ public class RouteController {
         model.addAttribute(path);
         return "route/view";
     }
+
+    @PostMapping("route/{path}/delete")
+    private String deleteRoute (@PathVariable String path){
+        BusRoute route = busRouteService.getRoute(path);
+        busRouteService.removeRoute(route);
+        return "redirect:/";
+    }
 }

@@ -29,33 +29,38 @@
 <!--                       th:text="${study.members.size()}">1</a>-->
 <!--                </span>-->
 <!--            </div>-->
-            <div class="row justify-content-center">
-                <table class="table" style="width:20%">
-                    <tr>
-                        <th scope="row">노선 번호</th>
-                        <td th:text="${busRoute.routeNumber}">Mark</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">운수회사</th>
-                        <td th:text="${busRoute.operator}">Jacob</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">지역</th>
-                        <td th:text="${busRoute.city}">Larry</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">종별</th>
-                        <td th:text="${busRoute.routeType}">Larry</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="row justify-content-center">
-                <div class="row px-3 justify-content-center">
-                    <div class="col-10 pt-3" th:utext="${busRoute.description}"></div>
-                </div>
-            </div>
+        <div class="row px-3 justify-content-center">
+            <table class="table" style="width:25%">
+                <tr>
+                    <th scope="row">노선 번호</th>
+                    <td th:text="${busRoute.routeNumber}">Mark</td>
+                </tr>
+                <tr>
+                    <th scope="row">운수회사</th>
+                    <td th:text="${busRoute.operator}">Jacob</td>
+                </tr>
+                <tr>
+                    <th scope="row">지역</th>
+                    <td th:text="${busRoute.city}">Larry</td>
+                </tr>
+                <tr>
+                    <th scope="row">종별</th>
+                    <td th:text="${busRoute.routeType}">Larry</td>
+                </tr>
+            </table>
         </div>
-
+        <div class="row px-3 justify-content-center">
+            <div class="col-10 pt-3" th:utext="${busRoute.description}"></div>
+        </div>
+        <div class="row px-3 justify-content-center">
+            <form action="#" th:action="@{'/route/' + ${path} + '/edit'}" method="get" novalidate>
+                <button type="submit" class="btn btn-sm btn-outline-info">수정하기</button>
+            </form>
+            <form action="#" th:action="@{'/route/' + ${path} + '/delete'}" method="post" novalidate>
+                <button type="submit" class="btn btn-sm btn-outline-warning">삭제하기</button>
+            </form>
+        </div>
+    </div>
     </div>
 
     <footer th:replace="header-footer.html :: footer"></footer>
