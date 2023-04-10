@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="header-footer.html :: head"></head>
+<nav th:replace="navbar.html :: navbar"></nav>
+<body class="bg-light">
+    <div class="container">
+        <div class="row text-left justify-content-center bg-light">
+            <a href="#" class="text-decoration-none pt-3 pb-3 " th:href="@{'/route/' + ${path}}">
+                <span class="h2" th:text="${busRoute.title}"> 노선명</span>
+            </a>
+        </div>
+<!--            <div class="col-6 text-right justify-content-end">-->
+<!--                <span sec:authorize="isAuthenticated()" th:if="${study.isJoinable(#authentication.principal)}"-->
+<!--                      class="btn-group" role="group" aria-label="Basic example">-->
+<!--                    <a class="btn btn-primary" th:href="@{'/study/' + ${study.path} + '/join'}">-->
+<!--                        관심 노선 추가-->
+<!--                    </a>-->
+<!--                    <a class="btn btn-outline-primary" th:href="@{'/study/' + ${study.path} + '/members'}"-->
+<!--                       th:text="${study.members.size()}">1</a>-->
+<!--                </span>-->
+<!--                <span sec:authorize="isAuthenticated()"-->
+<!--                      th:if="${!study.closed && study.isMember(#authentication.principal)}" class="btn-group" role="group">-->
+<!--                    <a class="btn btn-outline-warning" th:href="@{'/study/' + ${study.path} + '/leave'}">-->
+<!--                        관심 노선 삭제-->
+<!--                    </a>-->
+<!--                    <a class="btn btn-outline-primary" th:href="@{'/study/' + ${study.path} + '/members'}"-->
+<!--                       th:text="${study.members.size()}">1</a>-->
+<!--                </span>-->
+<!--            </div>-->
+            <div class="row justify-content-center">
+                <table class="table" style="width:20%">
+                    <tr>
+                        <th scope="row">노선 번호</th>
+                        <td th:text="${busRoute.routeNumber}">Mark</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">운수회사</th>
+                        <td th:text="${busRoute.operator}">Jacob</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">지역</th>
+                        <td th:text="${busRoute.city}">Larry</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">종별</th>
+                        <td th:text="${busRoute.routeType}">Larry</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="row justify-content-center">
+                <div class="row px-3 justify-content-center">
+                    <div class="col-10 pt-3" th:utext="${busRoute.description}"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer th:replace="header-footer.html :: footer"></footer>
+    <script type="application/javascript">
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+</body>
+</html>

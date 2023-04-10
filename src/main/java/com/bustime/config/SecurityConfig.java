@@ -27,8 +27,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .mvcMatchers("/", "/login", "/sign-up", "/check-email-token",
-                        "/email-login", "/check-email-login", "/login-link").permitAll()
-                .mvcMatchers(HttpMethod.GET, "/profile/*").permitAll()
+                        "/lost-password", "/check-email-login", "/login-link", "/route").permitAll()
+                .mvcMatchers(HttpMethod.GET, "/profile/*", "/route/*").permitAll()
                 .anyRequest().authenticated();
 
         http.formLogin()
@@ -46,8 +46,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
-                .mvcMatchers("/node_modules/**")
+                .mvcMatchers("/node_modules/**", "/route/new", "/route/edit")
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+        web.ignoring().antMatchers("/favicon.ico", "/resources/**", "/error");
+
     }
 
     /* Remember Me 기능 구현과 관련하여, JDBC 토큰을 이용함. */
