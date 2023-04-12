@@ -1,11 +1,14 @@
 package com.bustime.module.route;
 
+import com.bustime.module.Tag.Tag;
 import com.bustime.module.account.Account;
+import com.bustime.module.account.UserAccount;
 import lombok.*;
 
 import javax.persistence.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,6 +33,9 @@ public class BusRoute {
     @ManyToMany
     private Set<Account> managers = new HashSet<>();
 
+    @ManyToMany
+    private Set<Account> watchers = new HashSet<>();
+
     @Column(nullable = false)
     private String Title; // 검색에 표출할 제목
 
@@ -49,23 +55,35 @@ public class BusRoute {
 
     private boolean isPublished = false;
 
+    public LocalDateTime publishedDateTime;
+
     private boolean isOutDated = false;
 
     private boolean isNoLongerOperating = false;
+
+    private int watcherCount;
+
+    @ManyToMany
+    private Set<Tag> tags = new HashSet<>();
 
     public void addManager(Account account) {
         this.managers.add(account);
     }
 
-//    public void addMember(Account account) {
-//        this.getMembers().add(account);
-//        memberCount = memberCount + 1;
-//    }
-//
-//    public void removeMember(Account account) {
-//        this.getMembers().remove(account);
-//        memberCount = memberCount - 1;
-//   }
+    public void addWatcher(Account account) {
+        this.getWatchers().add(account);
+        watcherCount = watcherCount + 1;
+    }
+
+    public void removeWatcher(Account account) {
+        this.getWatchers().remove(account);
+        watcherCount = watcherCount - 1;
+   }
+
+    public void publish() {
+            this.isPublished = true;
+            this.publishedDateTime = LocalDateTime.now();
+    }
 
     public String path(){
         return id.toString();
@@ -76,6 +94,14 @@ public class BusRoute {
 
     public boolean isManagedBy(Account account) {
         return this.getManagers().contains(account);
+    }
+
+    public boolean isManagedBy(UserAccount userAccount) {
+        return isManagedBy(userAccount.getAccount());
+    }
+
+    public boolean isMemberWatching(UserAccount userAccount) {
+        return this.watchers.contains(userAccount.getAccount());
     }
 
 }

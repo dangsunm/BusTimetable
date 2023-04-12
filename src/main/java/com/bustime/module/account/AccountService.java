@@ -1,8 +1,10 @@
 package com.bustime.module.account;
 
+import com.bustime.config.AppProperties;
+import com.bustime.config.mail.EmailMessage;
+import com.bustime.config.mail.EmailService;
 import com.bustime.module.Tag.Tag;
 import com.bustime.module.account.form.SignUpForm;
-import com.bustime.module.zone.Zone;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -17,6 +19,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -33,6 +37,9 @@ public class AccountService implements UserDetailsService {
     private final JavaMailSender javaMailSender;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+    private final TemplateEngine templateEngine;
+    private final AppProperties appProperties;
+    private final EmailService emailService;
 
     @Transactional(readOnly = true)
     @Override
@@ -63,13 +70,30 @@ public class AccountService implements UserDetailsService {
         return newAccount;
     }
 
-    public void sendSignUpConfirmEmail(Account newAccount) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(newAccount.getEmail());
-        mailMessage.setSubject("회원 가입 인증");
-        mailMessage.setText("/check-email-token?token=" + newAccount.getEmailCheckToken() +
+   public void sendSignUpConfirmEmail(Account newAccount) {
+//        SimpleMailMessage mailMessage = new SimpleMailMessage();
+//        mailMessage.setTo(newAccount.getEmail());
+//        mailMessage.setSubject("회원 가입 인증");
+//        mailMessage.setText("/check-email-token?token=" + newAccount.getEmailCheckToken() +
+//                "&email=" + newAccount.getEmail());
+//        javaMailSender.send(mailMessage);
+
+        Context context = new Context();
+        context.setVariable("link", "/check-email-token?token=" + newAccount.getEmailCheckToken() +
                 "&email=" + newAccount.getEmail());
-        javaMailSender.send(mailMessage);
+        context.setVariable("nickname", newAccount.getUsername());
+        context.setVariable("linkName", "이메일 인증하기");
+        context.setVariable("message", "우리동네 버스 시간표 사이트에 가입을 환영합니다. 서비스를 사용하려면 링크를 클릭하세요.");
+        context.setVariable("host", appProperties.getHost());
+        String message = templateEngine.process("mail/email-link-simple", context);
+
+        EmailMessage emailMessage = EmailMessage.builder()
+                .to(newAccount.getEmail())
+                .subject("우리동네 버스 시간표 - 회원 가입 인증")
+                .message(message)
+                .build();
+
+        emailService.sendEmail(emailMessage);
     }
 
     public void completeSignUp(Account account) {
@@ -95,35 +119,19 @@ public class AccountService implements UserDetailsService {
         accountRepository.save(account);
     }
 
-    public Set<Tag> getTags(Account account) {
-        Optional<Account> byId = accountRepository.findById(account.getId());
-        return byId.orElseThrow().getTags();
+    public void addTag(Account account, Tag tag) {
+        accountRepository.findById(account.getId())
+                .ifPresent(a -> a.getTags().add(tag));
     }
 
-    public void addTag(Account account, Tag tag) {
-        Optional<Account> byId = accountRepository.findById(account.getId());
-        byId.ifPresent(a -> a.getTags().add(tag));
+    public Set<Tag> getTags(Account account) {
+        return accountRepository.findById(account.getId()).orElseThrow().getTags();
     }
 
     public void removeTag(Account account, Tag tag) {
-        Optional<Account> byId = accountRepository.findById(account.getId());
-        byId.ifPresent(a -> a.getTags().remove(tag));
+        accountRepository.findById(account.getId())
+                .map(Account::getTags)
+                .ifPresent(tags -> tags.remove(tag));
     }
-
-    public Set<Zone> getZones(Account account) {
-        Optional<Account> byId = accountRepository.findById(account.getId());
-        return byId.orElseThrow().getZones();
-    }
-
-    public void addZone(Account account, Zone zone) {
-        Optional<Account> byId = accountRepository.findById(account.getId());
-        byId.ifPresent(a -> a.getZones().add(zone));
-    }
-
-    public void removeZone(Account account, Zone zone) {
-        Optional<Account> byId = accountRepository.findById(account.getId());
-        byId.ifPresent(a -> a.getZones().remove(zone));
-    }
-
 
 }

@@ -8,15 +8,12 @@ import com.bustime.module.account.form.SignUpForm;
 import com.bustime.module.account.form.UsernameForm;
 import com.bustime.module.account.validator.PasswordFormValidator;
 import com.bustime.module.account.validator.UserNameValidator;
-import com.bustime.module.zone.Zone;
-import com.bustime.module.zone.ZoneForm;
-import com.bustime.module.zone.ZoneRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
+
 import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -36,7 +33,6 @@ public class AccountController {
     private final AccountService accountService;
     private final AccountRepository accountRepository;
     private final TagRepository tagRepository;
-    private final ZoneRepository zoneRepository;
     private final ModelMapper modelMapper;
     private final UserNameValidator userNameValidator;
     private final ObjectMapper objectMapper;
@@ -160,7 +156,7 @@ public class AccountController {
     }
 
     /* Tag 관련 추가 및 삭제 */
-    @GetMapping("settings/tags")
+    @GetMapping("settings/account/tags")
     public String updateTags(@CurrentUser Account account, Model model) throws JsonProcessingException {
         model.addAttribute(account);
 
@@ -173,67 +169,24 @@ public class AccountController {
         return "account/settings/tags";
     }
 
-    @PostMapping("settings/tags/add")
-    @ResponseBody
-    public ResponseEntity addTag(@CurrentUser Account account, @RequestBody TagForm tagForm) {
-        String title = tagForm.getTagTitle();
-        Tag tag = tagRepository.findByTitle(title);
-        if (tag == null) {
-            tag = tagRepository.save(Tag.builder().title(title).build());
-        }
 
+    @PostMapping("settings/account/tags/add")
+    @ResponseStatus(HttpStatus.OK)
+    public void addTag(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+        String title = tagForm.getTagTitle();
+        Tag tag = tagRepository.findByTitle(title)
+                .orElseGet(() -> tagRepository.save(Tag.builder()
+                        .title(title)
+                        .build()));
         accountService.addTag(account, tag);
-        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("settings/tags/remove")
-    @ResponseBody
-    public ResponseEntity removeTag(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+    @PostMapping("settings/account/tags/remove")
+    @ResponseStatus(HttpStatus.OK)
+    public void removeTag(@CurrentUser Account account, @RequestBody TagForm tagForm) {
         String title = tagForm.getTagTitle();
-        Tag tag = tagRepository.findByTitle(title);
-        if (tag == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
+        Tag tag = tagRepository.findByTitle(title)
+                .orElseThrow(IllegalArgumentException::new);
         accountService.removeTag(account, tag);
-        return ResponseEntity.ok().build();
-    }
-
-    /* Zone 관련 추가 및 삭제 */
-    @GetMapping("settings/zones")
-    public String updateZonesForm(@CurrentUser Account account, Model model) throws JsonProcessingException {
-        model.addAttribute(account);
-
-        Set<Zone> zones = accountService.getZones(account);
-        model.addAttribute("zones", zones.stream().map(Zone::toString).collect(Collectors.toList()));
-
-        List<String> allZones = zoneRepository.findAll().stream().map(Zone::toString).collect(Collectors.toList());
-        model.addAttribute("whitelist", objectMapper.writeValueAsString(allZones));
-
-        return "account/settings/zones";
-    }
-
-    @PostMapping("settings/zones/add")
-    @ResponseBody
-    public ResponseEntity addZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm) {
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName());
-        if (zone == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        accountService.addZone(account, zone);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("settings/zones/remove")
-    @ResponseBody
-    public ResponseEntity removeZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm) {
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName());
-        if (zone == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        accountService.removeZone(account, zone);
-        return ResponseEntity.ok().build();
     }
 }

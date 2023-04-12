@@ -1,8 +1,15 @@
 package com.bustime.module.account;
 
 import com.bustime.module.Tag.Tag;
-import com.bustime.module.zone.Zone;
+import com.bustime.module.Tag.TagForm;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter @Setter @EqualsAndHashCode(of = "id")
@@ -40,9 +48,6 @@ public class Account {
     @ManyToMany
     private Set<Tag> tags = new HashSet<>();
 
-    @ManyToMany
-    private Set<Zone> zones = new HashSet<>();
-
     public void generateEmailCheckToken() {
         this.emailCheckToken = UUID.randomUUID().toString();
         this.emailCheckTokenGeneratedAt = LocalDateTime.now();
@@ -61,6 +66,5 @@ public class Account {
         this.emailVerified = true;
         this.joinedAt = LocalDateTime.now();
     }
-
 
 }

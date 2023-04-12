@@ -55,7 +55,12 @@
                     <small class="invalid-feedback">상세 소개를 입력하세요.</small>
                     <small class="form-text text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">FullDescription Error</small>
                 </div>
-
+                <div class="form-group">
+                    <label for="operator">운행 회사</label>
+                    <input id="operator" type="text" th:field="*{operator}" class="form-control"
+                           placeholder="운행 회사" aria-describedby="shortDescriptionHelp" required max="10">
+                    <small class="form-text text-danger" th:if="${#fields.hasErrors('operator')}" th:errors="*{operator}">operator Error</small>
+                </div>
                 <div class="form-group">
                     <button class="btn btn-primary btn-block" type="submit" aria-describedby="submitHelp">등록하기</button>
                 </div>
