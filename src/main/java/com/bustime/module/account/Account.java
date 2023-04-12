@@ -1,31 +1,32 @@
 package com.bustime.module.account;
 
 import com.bustime.module.Tag.Tag;
-import com.bustime.module.Tag.TagForm;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter @Setter @EqualsAndHashCode(of = "id")
 @Builder @AllArgsConstructor @NoArgsConstructor
+@SequenceGenerator(name = "ROUTE_SEQ_GENERATOR",
+        sequenceName = "ROUTE_SEQ", //매핑할 데이터베이스 시퀀스 이름
+        initialValue = 1,
+        allocationSize = 1)
 public class Account {
+
     @Id
     @GeneratedValue
     private Long id;
+
+    @Column(name = "member_id", insertable = false, updatable = false)
+    @GeneratedValue (strategy = GenerationType.TABLE,
+            generator = "ROUTE_SEQ_GENERATOR")
+    //Board 와의 종속성 문제: https://hyos-dev-log.tistory.com/2
+    private Long memberId;
 
     @Column(unique = true)
     private String email;
