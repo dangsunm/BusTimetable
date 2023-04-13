@@ -15,7 +15,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "comments")
 @Entity
 public class Comment {
 
@@ -34,11 +33,11 @@ public class Comment {
     @LastModifiedDate
     private String modifiedDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id", referencedColumnName = "board_id", insertable = false, updatable = false)
-    private Board board;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", referencedColumnName = "member_id", insertable = false, updatable = false)
+    @ManyToOne // Many = Board, User = One 한명의 유저는 여러개의 게시글을 쓸 수 있다.
+    @JoinColumn(name="userId") // foreign key (userId) references User (id)
     private Account account;
+
+    @ManyToOne // Many = Board, User = One 한명의 유저는 여러개의 게시글을 쓸 수 있다.
+    @JoinColumn(name="postId")
+    private Board board;
 }

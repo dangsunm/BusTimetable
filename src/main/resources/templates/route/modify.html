@@ -6,7 +6,7 @@
 <body class="bg-light">
     <div class="container">
         <div class="py-5 text-center">
-            <h2>버스 노선 등록하기</h2>
+            <h2>버스 노선 수정하기</h2>
         </div>
         <div class="row justify-content-center">
             <form class="needs-validation col-sm-10" th:action="@{'/route/' + ${path} + '/edit'}" th:object="${busRouteForm}" method="post" novalidate>

@@ -57,7 +57,7 @@
         </div>
         <div class="row px-3 justify-content-center" sec:authorize="isAuthenticated()" th:if="${busRoute.isManagedBy(#authentication.principal)}">
             <form action="#" th:action="@{'/route/' + ${path} + '/edit'}" method="get" novalidate>
-                <button type="submit" class="btn btn-sm btn-outline-info">수정하기</button>
+                <button type="submit" class="btn btn-sm btn-outline-info ml-3">수정하기</button>
             </form>
             <form action="#" th:action="@{'/route/' + ${path} + '/delete'}" method="post" novalidate>
                 <button type="submit" class="btn btn-sm btn-outline-warning">삭제하기</button>

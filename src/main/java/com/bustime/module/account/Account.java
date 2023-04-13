@@ -22,12 +22,6 @@ public class Account {
     @GeneratedValue
     private Long id;
 
-    @Column(name = "member_id", insertable = false, updatable = false)
-    @GeneratedValue (strategy = GenerationType.TABLE,
-            generator = "ROUTE_SEQ_GENERATOR")
-    //Board 와의 종속성 문제: https://hyos-dev-log.tistory.com/2
-    private Long memberId;
-
     @Column(unique = true)
     private String email;
 

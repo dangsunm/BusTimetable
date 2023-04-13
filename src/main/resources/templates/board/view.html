@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="header-footer.html :: head"></head>
+<nav th:replace="navbar.html :: navbar"></nav>
+<body class="bg-light">
+    <div class="container">
+        <div class="row pt-4 mb-4 text-left justify-content-center bg-light">
+            <div class="col-6">
+            <a href="#" class="text-decoration-none pt-3 pb-3 " th:href="@{'/board/' + ${path}}">
+                <span class="h2" th:text="${board.title}">게시글 제목</span>
+            </a>
+            </div>
+            <div class="col-4 text-right justify-content-end">
+                <div sec:authorize="isAuthenticated()" th:if="${board.isAuthor(#authentication.principal)}">
+                    <form action="#" th:action="@{'/board/' + ${path} + '/edit'}" method="get" novalidate>
+                        <button type="submit" class="btn btn-sm btn-outline-info">수정하기</button>
+                    </form>
+                    <form action="#" th:action="@{'/board/' + ${path} + '/delete'}" method="post" novalidate>
+                        <button type="submit" class="btn btn-sm btn-outline-warning">삭제하기</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row px-3 justify-content-center">
+            <table class="table col-10 pt-3">
+                <tr>
+                    <th scope="row">작성 일시</th>
+                    <td th:text="${board.createdDate}">Mark</td>
+                </tr>
+                <tr>
+                    <th scope="row">조회수</th>
+                    <td th:text="${board.view}">Jacob</td>
+                </tr>
+                <tr>
+                    <th scope="row">작성자</th>
+                    <td th:text="${board.getAccount().getUsername()}">Jacob</td>
+                </tr>
+                <tr>
+                    <td rowspan="2" th:utext="${board.content}">내용</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    </div>
+
+    <footer th:replace="header-footer.html :: footer"></footer>
+    <script type="application/javascript">
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+</body>
+</html>
