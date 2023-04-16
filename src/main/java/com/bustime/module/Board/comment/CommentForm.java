@@ -8,6 +8,6 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class CommentForm {
     @NotBlank
-    @Length(max=300)
-    private String content;
+    @Length(max=250)
+    private String comment;
 }

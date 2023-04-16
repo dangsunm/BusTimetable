@@ -4,6 +4,7 @@ import com.bustime.config.AppProperties;
 import com.bustime.config.mail.EmailMessage;
 import com.bustime.config.mail.EmailService;
 import com.bustime.module.Tag.Tag;
+import com.bustime.module.account.form.PasswordResetRequestForm;
 import com.bustime.module.account.form.SignUpForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,33 +67,30 @@ public class AccountService implements UserDetailsService {
         Account account = modelMapper.map(signUpForm, Account.class);
         account.generateEmailCheckToken();
         Account newAccount = accountRepository.save(account);
-        sendSignUpConfirmEmail(newAccount);
+        sendEmailLink(newAccount,
+                "check-email-token",
+                "우리동네 버스 시간표 - 회원 가입 인증",
+                "우리동네 버스 시간표 사이트에 가입을 환영합니다. 서비스를 사용하려면 링크를 클릭하세요."
+        );
         return newAccount;
     }
 
-   public void sendSignUpConfirmEmail(Account newAccount) {
-//        SimpleMailMessage mailMessage = new SimpleMailMessage();
-//        mailMessage.setTo(newAccount.getEmail());
-//        mailMessage.setSubject("회원 가입 인증");
-//        mailMessage.setText("/check-email-token?token=" + newAccount.getEmailCheckToken() +
-//                "&email=" + newAccount.getEmail());
-//        javaMailSender.send(mailMessage);
+   public void sendEmailLink(Account newAccount, String toLink, String subject, String msg ) {
 
         Context context = new Context();
-        context.setVariable("link", "/check-email-token?token=" + newAccount.getEmailCheckToken() +
+        context.setVariable("link", "/"+toLink+"?token=" + newAccount.getEmailCheckToken() +
                 "&email=" + newAccount.getEmail());
         context.setVariable("nickname", newAccount.getUsername());
-        context.setVariable("linkName", "이메일 인증하기");
-        context.setVariable("message", "우리동네 버스 시간표 사이트에 가입을 환영합니다. 서비스를 사용하려면 링크를 클릭하세요.");
+        context.setVariable("linkName", "인증 링크");
+        context.setVariable("message", msg);
         context.setVariable("host", appProperties.getHost());
         String message = templateEngine.process("mail/email-link-simple", context);
 
         EmailMessage emailMessage = EmailMessage.builder()
                 .to(newAccount.getEmail())
-                .subject("우리동네 버스 시간표 - 회원 가입 인증")
+                .subject(subject)
                 .message(message)
                 .build();
-
         emailService.sendEmail(emailMessage);
     }
 
@@ -134,4 +132,23 @@ public class AccountService implements UserDetailsService {
                 .ifPresent(tags -> tags.remove(tag));
     }
 
+    @Transactional
+    public Account passwordResetRequest(@Valid PasswordResetRequestForm resetForm) {
+        Account accountToReset = accountRepository.findByEmail(resetForm.getEmail());
+        accountToReset.generatePasswordRestToken();
+
+        sendEmailLink(accountToReset,
+                "reset-password",
+                "우리동네 버스 시간표 - 비밀번호 재설정",
+                "비밀번호 재설정을 위해 링크를 클릭하세요, 본 링크는 24시간동안만 유효합니다."
+        );
+        return accountToReset;
+    }
+
+    public boolean isAccountExists(String email) {
+        if (accountRepository.findByEmail(email) == null){
+            return false;
+        }
+        return true;
+    }
 }

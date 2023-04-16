@@ -3,6 +3,7 @@ package com.bustime.module.route;
 import com.bustime.module.Tag.Tag;
 import com.bustime.module.Tag.TagForm;
 import com.bustime.module.Tag.TagRepository;
+import com.bustime.module.Tag.TagService;
 import com.bustime.module.account.Account;
 import com.bustime.module.account.CurrentUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -20,6 +22,7 @@ import javax.validation.Valid;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -28,6 +31,7 @@ public class RouteController {
 
     private final BusRouteService busRouteService;
     private final BusRouteRepository busRouteRepository;
+    private final TagService tagService;
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
@@ -45,9 +49,13 @@ public class RouteController {
 
     @GetMapping("/new-route")
 
-    public String newRouteForm(@CurrentUser Account account, Model model) {
+    public String newRouteForm(@CurrentUser Account account, Model model) throws JsonProcessingException {
         model.addAttribute(account);
         model.addAttribute(new BusRouteForm());
+
+        List<String> allWL = tagRepository.findAll().stream().map(Tag::toString).collect(Collectors.toList());
+        model.addAttribute("whitelist", objectMapper.writeValueAsString(allWL));
+
         return "route/new";
     }
     @PostMapping("/new-route")
@@ -126,38 +134,35 @@ public class RouteController {
 
     /* Tag 관련 추가 및 삭제 */
     @GetMapping("/route/{path}/tags")
-    public String updateTags(@CurrentUser Account account, @PathVariable String path, Model model) throws JsonProcessingException {
-        BusRoute route = busRouteService.getRouteToUpdate(account, path);
-        model.addAttribute(account);
-        model.addAttribute(route);
+    public String updateTags(@PathVariable String path, Model model) throws JsonProcessingException {
+        Set<Tag> tags = busRouteService.getTags(path);
+        model.addAttribute("tags", tags.stream().map(Tag::getTitle).collect(Collectors.toList()));
 
-        model.addAttribute("tags", route.getTags().stream()
-                .map(Tag::getTitle).collect(Collectors.toList()));
-        List<String> allTagTitles = tagRepository.findAll().stream()
-                .map(Tag::getTitle).collect(Collectors.toList());
-        model.addAttribute("whitelist", objectMapper.writeValueAsString(allTagTitles));
+        List<String> allTags = tagRepository.findAll().stream().map(Tag::getTitle).collect(Collectors.toList());
+        model.addAttribute("whitelist", objectMapper.writeValueAsString(allTags));
 
         return "/route/tags";
     }
 
     @PostMapping("/route/{path}/tags/add")
-    @ResponseStatus(HttpStatus.OK)
-    public void addTag(@CurrentUser Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
-        String title = tagForm.getTagTitle();
-        Tag tag = tagRepository.findByTitle(title)
-                .orElseGet(() -> tagRepository.save(Tag.builder()
-                        .title(title)
-                        .build()));
+    @ResponseBody
+    public ResponseEntity addTag(@PathVariable String path, @RequestBody TagForm tagForm) {
+        Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
         busRouteService.addTag(path, tag);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/route/{path}/tags/remove")
-    @ResponseStatus(HttpStatus.OK)
-    public void removeTag(@CurrentUser Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
+    @ResponseBody
+    public ResponseEntity removeTag(@CurrentUser Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
         String title = tagForm.getTagTitle();
-        Tag tag = tagRepository.findByTitle(title)
-                .orElseThrow(IllegalArgumentException::new);
+        Tag tag = tagRepository.findByTitle(title);
+        if (tag == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         busRouteService.removeTag(path, tag);
+        return ResponseEntity.ok().build();
     }
 
 }

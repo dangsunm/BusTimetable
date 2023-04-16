@@ -40,17 +40,35 @@ public class Account {
 
     private LocalDateTime emailCheckTokenGeneratedAt;
 
+    private String passwordResetToken;
+
+    private LocalDateTime passwordResetTokenGeneratedAt;
+
+
     @ManyToMany
     private Set<Tag> tags = new HashSet<>();
+
 
     public void generateEmailCheckToken() {
         this.emailCheckToken = UUID.randomUUID().toString();
         this.emailCheckTokenGeneratedAt = LocalDateTime.now();
     }
-
     public boolean canSendConfirmEmail() {
         //return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
         return true;
+    }
+
+    public void generatePasswordRestToken() {
+        this.passwordResetToken = UUID.randomUUID().toString();
+        this.passwordResetTokenGeneratedAt = LocalDateTime.now();
+    }
+
+    public boolean canSendPasswordResetToken() {
+        return this.passwordResetTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
+    }
+
+    public boolean validResetPasswordTiming() {
+        return this.passwordResetTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(72));
     }
 
     public boolean isValidToken(String token) {

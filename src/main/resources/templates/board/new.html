@@ -24,6 +24,17 @@
                     <small class="invalid-feedback">게시글 내용을 입력하세요.</small>
                     <small class="form-text text-danger" th:if="${#fields.hasErrors('content')}" th:errors="*{content}">FullDescription Error</small>
                 </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-info" role="alert">
+                            태그를 입력하고 쉼표 또는 엔터를 입력하세요.
+                        </div>
+                        <div id="whitelist" th:text="${whitelist}" hidden></div>
+                        <input id="tags" type="text" name="tags" th:value="${#strings.listJoin(tags, ',')}"
+                               class="tagify-outside" aria-describedby="tagHelp"/>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <button class="btn btn-primary btn-block" type="submit" aria-describedby="submitHelp">등록하기</button>
                 </div>

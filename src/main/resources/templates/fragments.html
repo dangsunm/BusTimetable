@@ -22,6 +22,7 @@
     }, false)
   }())
 </script>
+
 <script type="application/javascript" th:inline="javascript" th:fragment="ajax-csrf-header">
     $(function () {
         var csrfToken = /*[[${_csrf.token}]]*/ null;
@@ -35,7 +36,7 @@
 <div th:fragment="update-tags (baseUrl)">
     <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
     <script type="application/javascript" th:inline="javascript">
-        $(function () {
+        $(function() {
             function tagRequest(url, tagTitle) {
                 $.ajax({
                     dataType: "json",
@@ -54,6 +55,8 @@
 
             function onAdd(e) {
                 tagRequest("/add", e.detail.data.value);
+                alert("Tag added, please refresh.")
+                tagify.input.set.call(tagify);
             }
 
             function onRemove(e) {
@@ -64,29 +67,17 @@
             var tagify = new Tagify(tagInput, {
                 pattern: /^.{0,20}$/,
                 whitelist: JSON.parse(document.querySelector("#whitelist").textContent),
-                dropdown: {
-                    enabled: 1,
-                }
+                dropdown : {
+                    enabled: 1, // suggest tags after a single character input
+                } // map tags
             });
             tagify.on("add", onAdd);
             tagify.on("remove", onRemove);
-            tagify.DOM.input.classList.add('form-control');
-            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
-        });
-    </script>
-</div>
 
-<!-- summernote editor -->
-<div th:fragment="editor-script">
-    <script src="/node_modules/summernote/dist/summernote-bs4.js"></script>
-    <script type="application/javascript">
-        $(function () {
-            $('.editor').summernote({
-                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Noto Sans KR', 'Merriweather'],
-                placeholder: '버스 시간표와, 버스 노선 정보와 같은 내용을 본 란에 기입해 주세요.',
-                tabsize: 2,
-                height: 300
-            });
+            // add a class to Tagify's input element
+            tagify.DOM.input.classList.add('form-control');
+            // re-place Tagify's input element outside of the  element (tagify.DOM.scope), just before it
+            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
         });
     </script>
 </div>

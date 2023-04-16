@@ -3,7 +3,9 @@ package com.bustime.module.account;
 import com.bustime.module.Tag.Tag;
 import com.bustime.module.Tag.TagForm;
 import com.bustime.module.Tag.TagRepository;
+import com.bustime.module.Tag.TagService;
 import com.bustime.module.account.form.PasswordForm;
+import com.bustime.module.account.form.PasswordResetRequestForm;
 import com.bustime.module.account.form.SignUpForm;
 import com.bustime.module.account.form.UsernameForm;
 import com.bustime.module.account.validator.PasswordFormValidator;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -32,6 +35,7 @@ public class AccountController {
 
     private final AccountService accountService;
     private final AccountRepository accountRepository;
+    private final TagService tagService;
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
     private final UserNameValidator userNameValidator;
@@ -64,7 +68,6 @@ public class AccountController {
         accountService.login(account);
         return "redirect:/";
     }
-
     /* My Account info */
     @GetMapping("/profile/{username}")
     public String viewProfile(@PathVariable String username, Model model, @CurrentUser Account account) {
@@ -91,7 +94,7 @@ public class AccountController {
         }
 
         accountService.updateUserName(account, usernameForm.getUsername());
-        attributes.addFlashAttribute("message", "닉네임을 수정했습니다.");
+        attributes.addFlashAttribute("message", "수정 완료.");
         return "redirect:/account/settings/account";
     }
 
@@ -116,11 +119,73 @@ public class AccountController {
         return "redirect:/settings/password";
     }
 
+    /* 비밀번호 재설정 */
+
+    @GetMapping("/lost-password")
+    public String passwordResetRequestForm(Model model) {
+        model.addAttribute(new PasswordResetRequestForm());
+        return "account/lost-password";
+    }
+
+    @PostMapping("/lost-password")
+    public String passwordResetRequestSubmit(@Valid PasswordResetRequestForm resetForm,
+                                             Errors errors, RedirectAttributes attributes) {
+        if (errors.hasErrors()) {
+            return "account/lost-password";
+        }
+        if (!accountService.isAccountExists(resetForm.getEmail())){
+            attributes.addFlashAttribute("message", "해당 계정이 존재하지 않습니다.");
+        }
+        else{
+            accountService.passwordResetRequest(resetForm);
+            attributes.addFlashAttribute("message", "이메일을 발송했습니다.");
+        }
+
+        accountService.passwordResetRequest(resetForm);
+        return "redirect:/account/lost-password";
+    }
+
+    @GetMapping("reset-password")
+    public String pwdReset(String token, String email, Model model) {
+        Account account = accountRepository.findByEmail(email);
+        model.addAttribute(new PasswordForm());
+
+        String view = "account/reset-password";
+        if (account == null) {
+            model.addAttribute("error", "wrong.email");
+            return view;
+        }
+
+        if (!account.isValidToken(token)) {
+            model.addAttribute("error", "wrong.token");
+            return view;
+        }
+
+        accountService.login(account);
+        accountService.completeSignUp(account);
+        return view;
+    }
+
+    @PostMapping("reset-password")
+    public String processPwdReset(@CurrentUser Account account, @Valid PasswordForm passwordForm, Errors errors,
+                                 Model model, RedirectAttributes attributes) {
+        if (errors.hasErrors()) {
+            model.addAttribute(account);
+            return "account/reset-password";
+        }
+
+        accountService.updatePassword(account, passwordForm.getNewPassword());
+        attributes.addFlashAttribute("message", "패스워드를 변경했습니다.");
+        return "redirect:/";
+    }
+
+
     /* Email Confirmation */
     @GetMapping("/check-email-token")
     public String checkEmailToken(String token, String email, Model model) {
         Account account = accountRepository.findByEmail(email);
         String view = "account/checked-email";
+
         if (account == null) {
             model.addAttribute("error", "wrong.email");
             return view;
@@ -151,7 +216,11 @@ public class AccountController {
             return "account/check-email";
         }
 
-        accountService.sendSignUpConfirmEmail(account);
+        accountService.sendEmailLink(account,
+                "check-email-token",
+                "우리동네 버스 시간표 - 회원 가입 인증",
+                "우리동네 버스 시간표 사이트에 가입을 환영합니다. 서비스를 사용하려면 링크를 클릭하세요."
+        );
         return "redirect:/";
     }
 
@@ -171,22 +240,23 @@ public class AccountController {
 
 
     @PostMapping("settings/account/tags/add")
-    @ResponseStatus(HttpStatus.OK)
-    public void addTag(@CurrentUser Account account, @RequestBody TagForm tagForm) {
-        String title = tagForm.getTagTitle();
-        Tag tag = tagRepository.findByTitle(title)
-                .orElseGet(() -> tagRepository.save(Tag.builder()
-                        .title(title)
-                        .build()));
+    @ResponseBody
+    public ResponseEntity addTag(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+        Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
         accountService.addTag(account, tag);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("settings/account/tags/remove")
-    @ResponseStatus(HttpStatus.OK)
-    public void removeTag(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+    @ResponseBody
+    public ResponseEntity removeTag(@CurrentUser Account account, @RequestBody TagForm tagForm) {
         String title = tagForm.getTagTitle();
-        Tag tag = tagRepository.findByTitle(title)
-                .orElseThrow(IllegalArgumentException::new);
+        Tag tag = tagRepository.findByTitle(title);
+        if (tag == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         accountService.removeTag(account, tag);
+        return ResponseEntity.ok().build();
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -74,12 +75,13 @@ public class BusRouteService {
     }
 
     public void addTag(String path, Tag tag) {
-        busRouteRepository.findById(Long.parseLong(path))
-                .ifPresent(a -> a.getTags().add(tag));
+        Optional<BusRoute> byId = busRouteRepository.findById(Long.parseLong(path));
+        byId.ifPresent(a -> a.getTags().add(tag));
     }
 
     public Set<Tag> getTags(String path) {
-        return busRouteRepository.findById(Long.parseLong(path)).orElseThrow().getTags();
+        Optional<BusRoute> byId = busRouteRepository.findById(Long.parseLong(path));
+        return byId.orElseThrow().getTags();
     }
 
     public void removeTag(String path, Tag tag) {
