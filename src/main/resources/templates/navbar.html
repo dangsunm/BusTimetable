@@ -2,8 +2,8 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light"
-     style="background-color: #e3f2fd;">
+
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
   <a class="navbar-brand" href="/" th:href="@{/}">Navbar</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -12,7 +12,7 @@
     <ul class="navbar-nav mr-auto">
 
       <li class="nav-item">
-        <a class="nav-link" href="#">버스 리스트</a>
+        <a class="nav-link" th:href="@{/route}" href="#">버스 리스트</a>
       </li>
 
       <li class="nav-item dropdown">
@@ -30,10 +30,10 @@
       </li>
       <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-          <span sec:authentication="name">Username</span>
+          <span sec:authentication="name" th:href="@{'/mypage'}">Username</span>
         </a>
         <div class="dropdown-menu">
-          <a class="dropdown-item" th:href="@{'/profile/' + ${#authentication.name}}">프로필</a>
+          <a class="dropdown-item" th:href="@{'/mypage'}">마이 페이지</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" th:href="@{'/settings/account'}">프로필 편집</a>
           <form class="form-inline my-2 my-lg-0" action="#" th:action="@{/logout}" method="post">
@@ -48,4 +48,13 @@
     </form>
   </div>
 </nav>
+
+<div th:fragment="settings-menu (currentMenu)" class="list-group">
+  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'profile'}? active" href="#" th:href="@{/settings/account}">설정 메인</a>
+  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'password'}? active" href="#" th:href="@{/settings/password}">패스워드</a>
+  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'tags'}? active" href="#" th:href="@{/settings/tags}">관심 주제</a>
+  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'notifications'}? active" href="#" th:href="@{/settings/notifications}">알림</a>
+<!--  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'zones'}? active" href="#" th:href="@{/settings/zones}">활동 지역</a>-->
+</div>
+
 </html>

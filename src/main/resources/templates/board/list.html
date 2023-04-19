@@ -5,7 +5,10 @@
 <head th:replace="header-footer.html :: head"></head>
 <nav th:replace="navbar.html :: navbar"></nav>
 <body class="bg-light">
-  <div class="container">
+  <div class="container mt-3">
+    <div class="row justify-content-left">
+      <h2>게시판</h2>
+    </div>
     <div class="row px-3 justify-content-center">
       <table class="table col-10 pt-3">
         <tr>
@@ -17,7 +20,7 @@
         <tr th:each="board:${boardPage.getContent()}">
           <td><a th:href="@{'/board/' + ${board.id} + '?page=' + ${boardPage.getNumber()}}" th:text="${board.title}">Title</a></td>
           <td th:text="${board.getAccount().getUsername()}"></td>
-          <td th:text="${board.createdDate}"></td>
+          <td th:text="${board.createdDate}"><`/td>
           <td th:text="${board.view}"></td>
         </tr>
       </table>

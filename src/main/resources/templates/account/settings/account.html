@@ -2,64 +2,75 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="header-footer.html :: head"></head>
 <nav th:replace="navbar.html :: navbar"></nav>
-<body class="bg-light">
-<div class="container">
-    <div class="justify-content-center">
-        <div th:if="${message}" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
-            <span th:text="${message}">완료</span>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-
-        <div class="row">
-            <h2 class="col-12">닉네임 변경</h2>
-        </div>
-        <div class="row">
-            <form class="needs-validation col-12" th:object="${usernameForm}" th:action="@{/settings/account}" method="post" novalidate>
-                <div class="alert alert-warning" role="alert">
-                    닉네임을 변경하면 프로필 페이지 링크도 바뀝니다!
-                </div>
-                <div class="form-group">
-                    <input id="username" type="text" th:field="*{username}" class="form-control" aria-describedby="usernameHelp" required>
-                    <small id="usernameHelp" class="form-text text-muted">
-                        공백없이 문자와 숫자로만 3자 이상 20자 이내로 입력하세요.
-                    </small>
-                    <small class="invalid-feedback">닉네임을 입력하세요.</small>
-                    <small class="form-text text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">username Error</small>
-                </div>
-                <div class="form-group">
-                    <button class="btn btn-outline-primary" type="submit" aria-describedby="submitHelp">변경하기</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="dropdown-divider"></div>
-        <div class="row">
-            <div class="col-sm-12">
-                <h2 th:href="@{/settings/password}">비밀번호 변경</h2>
-                <small id="passwordHelp" class="form-text text-muted">
-                    비밀번호 변경을 원하시면 여기를 눌러주세요
-                </small>
-                <button class="btn btn-outline-warning disabled" th:onclick="@{/settings/password}">비밀번호 변경</button>
-            </div>
-        </div>
-
-        <!-- TODO 계정 삭제 구현 -->
-        <div class="dropdown-divider"></div>
-        <div class="row">
-            <div class="col-sm-12">
-                <h2 class="text-danger">계정 삭제</h2>
-                <div class="alert alert-danger" role="alert">
-                    이 계정은 삭제할 수 없습니다.
-                </div>
-                <button class="btn btn-outline-danger disabled">계정 삭제</button>
-            </div>
-        </div>
-    </div>
-    <div th:replace="header-footer.html :: footer"></div>
-
+<div class="alert alert-warning" role="alert" th:if="${account != null && !account.emailVerified}">
+    가입을 완료하려면 <a href="#" th:href="@{/check-email}" class="alert-link">계정 인증 이메일을 확인</a>하세요.
 </div>
-<script th:replace="fragments.html :: form-validation"></script>
+<body class="bg-light">
+    <div class="container">
+        <div class="row mt-5 justify-content-center">
+            <h1> 환경 설정 </h1>
+        </div>
+        <div class="row mt-5 justify-content-center">
+            <div th:if="${message}" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+                <span th:text="${message}">완료</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="col-2">
+                <div th:replace="navbar.html :: settings-menu(currentMenu='account')"></div>
+            </div>
+
+            <div class="col-8">
+                <div class="row">
+                    <h2 class="col-12">닉네임 변경</h2>
+                </div>
+
+                <div class="row">
+                    <form class="needs-validation col-12" th:object="${usernameForm}" th:action="@{/settings/account}" method="post" novalidate>
+                        <div class="form-group">
+                            <input id="username" type="text" th:field="*{username}" class="form-control" aria-describedby="usernameHelp" required>
+                            <small id="usernameHelp" class="form-text text-muted">
+                                공백없이 문자와 숫자로만 3자 이상 20자 이내로 입력하세요.
+                            </small>
+                            <small class="invalid-feedback">닉네임을 입력하세요.</small>
+                            <small class="form-text text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">username Error</small>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-outline-primary" type="submit" aria-describedby="submitHelp">변경하기</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 비밀번호 변경 -->
+                <div class="dropdown-divider"></div>
+                <div class="row">
+                    <form class="col-sm-12" th:action="@{/settings/password}" method="get" novalidate>
+                        <h2>비밀번호 변경</h2>
+                        <small id="passwordHelp" class="form-text text-muted">
+                            비밀번호 변경을 원하시면 여기를 눌러주세요
+                        </small>
+                        <button class="btn btn-outline-warning disabled" type="submit">비밀번호 변경</button>
+                    </form>
+                </div>
+
+                <!-- TODO 계정 삭제 구현 -->
+                <div class="dropdown-divider"></div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h2 class="text-danger">계정 삭제</h2>
+                        <div class="alert alert-danger" role="alert">
+                            계정을 삭제하면 더이상 계정에 접근할 수 없으며, 모든것을 잃게 됩니다. 정말 삭제하시겠습니까?
+                        </div>
+                        <button class="btn btn-outline-danger disabled">계정 삭제</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div th:replace="header-footer.html :: footer"></div>
+
+    </div>
+    <script th:replace="fragments.html :: form-validation"></script>
 </body>
 </html>

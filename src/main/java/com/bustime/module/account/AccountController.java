@@ -10,6 +10,8 @@ import com.bustime.module.account.form.SignUpForm;
 import com.bustime.module.account.form.UsernameForm;
 import com.bustime.module.account.validator.PasswordFormValidator;
 import com.bustime.module.account.validator.UserNameValidator;
+import com.bustime.module.route.BusRoute;
+import com.bustime.module.route.BusRouteRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class AccountController {
 
     private final AccountService accountService;
     private final AccountRepository accountRepository;
+    private final BusRouteRepository routeRepository;
     private final TagService tagService;
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
@@ -68,15 +71,19 @@ public class AccountController {
         accountService.login(account);
         return "redirect:/";
     }
-    /* My Account info */
-    @GetMapping("/profile/{username}")
-    public String viewProfile(@PathVariable String username, Model model, @CurrentUser Account account) {
-        Account accountToView = accountService.getAccount(username);
-        model.addAttribute(accountToView);
-        model.addAttribute("isOwner", accountToView.equals(account));
-        return "account/profile";
+
+    /* My Account Page */
+    @GetMapping("/mypage")
+    public String viewProfile(@CurrentUser Account account, Model model) {
+        Account accountLoaded = accountRepository.findAccountWithTagssById(account.getId());
+        model.addAttribute("account", accountLoaded);
+        List<BusRoute> routeWatching = routeRepository.findByWatchersContaining(account);
+        model.addAttribute("routeWatching", routeWatching);
+
+        return "account/mypage";
     }
 
+    /* 계정 설정 */
     @GetMapping ("settings/account")
     public String getSettingsAccountInfo (@CurrentUser Account account, Model model) {
         model.addAttribute(account);
@@ -94,8 +101,8 @@ public class AccountController {
         }
 
         accountService.updateUserName(account, usernameForm.getUsername());
-        attributes.addFlashAttribute("message", "수정 완료.");
-        return "redirect:/account/settings/account";
+        attributes.addFlashAttribute("message", "닉네임 수정을 완료했습니다!");
+        return "redirect:/settings/account";
     }
 
     /* 비밀번호 변경 */
@@ -120,7 +127,6 @@ public class AccountController {
     }
 
     /* 비밀번호 재설정 */
-
     @GetMapping("/lost-password")
     public String passwordResetRequestForm(Model model) {
         model.addAttribute(new PasswordResetRequestForm());
@@ -225,7 +231,7 @@ public class AccountController {
     }
 
     /* Tag 관련 추가 및 삭제 */
-    @GetMapping("settings/account/tags")
+    @GetMapping("settings/tags")
     public String updateTags(@CurrentUser Account account, Model model) throws JsonProcessingException {
         model.addAttribute(account);
 

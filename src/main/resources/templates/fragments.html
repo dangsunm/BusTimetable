@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
+<div th:fragment="editor-script">
+    <script src="/node_modules/summernote/dist/summernote-bs4.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            $('.editor').summernote({
+                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Noto Sans KR', 'Merriweather'],
+                placeholder: '게시글의 내용을 입력해 주세요.',
+                tabsize: 2,
+                height: 300
+            });
+        });
+    </script>
+</div>
+
 <script type="application/javascript" th:fragment="form-validation">
   (function () {
     'use strict';

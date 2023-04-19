@@ -115,6 +115,7 @@ public class AccountService implements UserDetailsService {
     public void updateUserName(Account account, String username) {
         account.setUsername(username);
         accountRepository.save(account);
+        login(account); // 다시 로그인해서 세션 갱신
     }
 
     public void addTag(Account account, Tag tag) {

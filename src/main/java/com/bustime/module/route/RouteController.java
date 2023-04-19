@@ -36,16 +36,14 @@ public class RouteController {
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
 
-    @GetMapping ("/route/list")
-    public String viewList (@CurrentUser Account account, Model model) {
-        model.addAttribute(account);
+    @GetMapping ("/route")
+    public String viewRouteList (Model model) {
         String searchCondition = "normal";
         model.addAttribute(searchCondition);
+        List<BusRoute> routes = busRouteRepository.getBusRouteByIsNoLongerOperatingOrderByPublishedDateTimeDesc(false);
+        model.addAttribute("routes",routes);
         return "route/list";
     }
-
-    //@PostMapping ("/route/list")
-//    public String search_from_list
 
     @GetMapping("/new-route")
 

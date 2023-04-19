@@ -2,23 +2,34 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="header-footer.html :: head"></head>
 <nav th:replace="navbar.html :: navbar"></nav>
+<div class="alert alert-warning" role="alert" th:if="${account != null && !account.emailVerified}">
+    가입을 완료하려면 <a href="#" th:href="@{/check-email}" class="alert-link">계정 인증 이메일을 확인</a>하세요.
+</div>
 
 <body class="bg-light">
     <div class="container">
-
-        <div class="row">
-            <h2 class="col-12">관심있는 노선</h2>
+        <div class="row mt-5 justify-content-center">
+            <h1> 환경 설정 </h1>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="alert alert-info" role="alert">
-                    태그를 입력하고 쉼표 또는 엔터를 입력하세요.
+        <div class="row mt-5 justify-content-center">
+            <div class="col-2">
+                <div th:replace="navbar.html :: settings-menu(currentMenu='tags')"></div>
+            </div>
+            <div class="col-8">
+                <div class="row">
+                    <h2 class="col-12">관심 태그</h2>
                 </div>
-            </div>
-                <div id="whitelist" th:text="${whitelist}" hidden>
-            </div>
-            <input id="tags" type="text" name="tags" th:value="${#strings.listJoin(tags, ',')}"
-                   class="tagify-outside" aria-describedby="tagHelp">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-info" role="alert">
+                            태그를 입력하고 쉼표 또는 엔터를 입력하세요.
+                        </div>
+                    </div>
+                        <div id="whitelist" th:text="${whitelist}" hidden>
+                    </div>
+                    <input id="tags" type="text" name="tags" th:value="${#strings.listJoin(tags, ',')}"
+                           class="tagify-outside" aria-describedby="tagHelp">
+                </div>
             </div>
         </div>
     </div>
