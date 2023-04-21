@@ -10,5 +10,5 @@ import org.springframework.transaction.annotation.Transactional;
 public interface BoardRepository extends JpaRepository<Board, Long> {
     Board getById (Long path);
 
-    Page<Board> findByBoardType(String free, Pageable pageable);
+    Page<Board> findByBoardType(String boardType, Pageable pageable);
 }

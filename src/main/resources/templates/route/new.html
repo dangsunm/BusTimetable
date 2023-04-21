@@ -10,15 +10,10 @@
         </div>
         <div class="row justify-content-center">
             <form class="needs-validation col-sm-10" th:action="@{/new-route}" th:object="${busRouteForm}" method="post" novalidate>
-
                 <div class="form-group">
                     <label for="title">제목</label>
                     <input id="title" type="text" th:field="*{title}" class="form-control"
                            placeholder="제목" aria-describedby="titleHelp" required max="50">
-<!--                    <small id="titleHelp" class="form-text text-muted">-->
-<!--                        검색에 표출될 제목을 입력하세요-->
-<!--                    </small>-->
-<!--                    <small class="invalid-feedback">검색에 표출될 제목을 입력하세요.</small>-->
                     <small class="form-text text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title Error</small>
                 </div>
                 <div class="form-group">
@@ -46,6 +41,14 @@
                     <small class="form-text text-danger" th:if="${#fields.hasErrors('operator')}" th:errors="*{operator}">operator Error</small>
                 </div>
                 <div class="form-group">
+                    <label for="description">노선 상태</label>
+                    <select id="status" class="custom-select mr-sm-2" th:field="*{routeStatus}">
+                        <option value="ACTIVE">운행중</option>
+                        <option value="OUTDATED">오래됨</option>
+                        <option value="CLOSED">폐선/운행 중단</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="description">상세 설명</label>
                     <textarea id="description" type="textarea" th:field="*{description}" class="editor form-control"
                               placeholder="내용을 입력해 주세요." aria-describedby="fullDescriptionHelp" required></textarea>
@@ -55,6 +58,7 @@
                     <small class="invalid-feedback">상세 소개를 입력하세요.</small>
                     <small class="form-text text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">FullDescription Error</small>
                 </div>
+
                 <div class="form-group">
                     <button class="btn btn-primary btn-block" type="submit" aria-describedby="submitHelp">등록하기</button>
                 </div>

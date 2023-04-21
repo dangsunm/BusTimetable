@@ -57,9 +57,8 @@ public class BusRoute {
 
     public LocalDateTime publishedDateTime;
 
-    private boolean isOutDated = false;
-
-    private boolean isNoLongerOperating = false;
+    @Enumerated(EnumType.STRING)
+    private RouteStatus routeStatus;
 
     private int watcherCount;
 

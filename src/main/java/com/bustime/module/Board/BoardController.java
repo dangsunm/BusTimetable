@@ -2,11 +2,10 @@ package com.bustime.module.Board;
 
 import com.bustime.module.Board.comment.Comment;
 import com.bustime.module.Board.comment.CommentForm;
+import com.bustime.module.Board.comment.CommentRepository;
 import com.bustime.module.account.Account;
 import com.bustime.module.account.CurrentUser;
-import com.bustime.module.route.BusRoute;
-import com.bustime.module.route.BusRouteForm;
-import com.bustime.module.route.BusRouteService;
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -25,16 +24,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
     private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
     private final ModelMapper modelMapper;
 
     @GetMapping("/board")
-    private String boardList (@CurrentUser Account account, Model model,
+    private String boardList (Model model,
                               @PageableDefault(size = 10, sort = "createdDate", direction = Sort.Direction.DESC)
                                 Pageable pageable)
     {
@@ -54,8 +55,11 @@ public class BoardController {
             pageN = "0";
         }
         model.addAttribute("page", pageN);
+        model.addAttribute(new CommentForm());
 
         boardService.increaseViewCount(path);
+        List<Comment> comments = commentRepository.findCommentsByBoard(board);
+        model.addAttribute("comments", comments);
         return "board/view";
     }
 
@@ -126,6 +130,17 @@ public class BoardController {
         }
 
         boardService.createNewComment(modelMapper.map(commentForm, Comment.class), account, id);
+
+        return "redirect:/board/" + URLEncoder.encode(postId, StandardCharsets.UTF_8);
+    }
+
+    @PostMapping("board/{path}/commnent-delete")
+    public String removeComment (@PathVariable String path, @RequestParam(name="cid") String cid){
+        Board post = boardService.getBoard(path);
+        Long id = post.getId();
+        String postId = String.valueOf(id);
+
+        boardService.deleteComment(Long.valueOf(cid));
 
         return "redirect:/board/" + URLEncoder.encode(postId, StandardCharsets.UTF_8);
     }

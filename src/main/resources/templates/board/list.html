@@ -5,12 +5,12 @@
 <head th:replace="header-footer.html :: head"></head>
 <nav th:replace="navbar.html :: navbar"></nav>
 <body class="bg-light">
-  <div class="container mt-3">
-    <div class="row justify-content-left">
-      <h2>게시판</h2>
+  <div class="container">
+    <div class="row justify-content-center mt-3">
+      <h2 class="col-10">게시판</h2>
     </div>
-    <div class="row px-3 justify-content-center">
-      <table class="table col-10 pt-3">
+    <div class="row justify-content-center mt-3">
+      <table class="table col-10">
         <tr>
           <th scope="col">제목</th>
           <th scope="col">작성자</th>
@@ -50,7 +50,7 @@
         </nav>
       </div>
     </div>
-    <div class="row justify-content-center">
+    <div class="row justify-content-center" sec:authorize="isAuthenticated()" >
       <button type="button" th:onclick="|location.href='@{'/new-post'}'|" class="btn btn-primary">새글 작성하기</button>
     </div>
   </div>

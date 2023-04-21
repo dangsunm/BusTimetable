@@ -1,7 +1,5 @@
 package com.bustime.module.Tag;
 
-import com.bustime.module.zone.Zone;
-import com.bustime.module.zone.ZoneRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;

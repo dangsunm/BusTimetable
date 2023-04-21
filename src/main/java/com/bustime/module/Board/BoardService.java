@@ -64,4 +64,8 @@ public class BoardService {
         newComment.publish();
         return newComment;
     }
+
+    public void deleteComment(Long cid){
+        commentRepository.deleteById(cid);
+    }
 }

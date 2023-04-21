@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="header-footer.html :: head"></head>
+<nav th:replace="navbar.html :: navbar"></nav>
+<body class="bg-light">
+    <div class="container">
+        <div class="py-5 text-center">
+            <h2>버스 노선 수정요청 - 답변</h2>
+        </div>
+        <div class="row justify-content-center">
+            <table class="col-10">
+                <tr>
+                    <th scope="row">요청 노선</th>
+                    <td th:text="${request.getRoute().getTitle()}">RouteNumber</td>
+                </tr>
+                <tr>
+                    <th scope="row">요청자</th>
+                    <td th:text="${request.getAccount().getUsername()}">RouteNumber</td>
+                </tr>
+                <tr>
+                    <th scope="row">요청 내용</th>
+                    <td th:text="${request.description}"></td>
+                </tr>
+            </table>
+            <div class="dropdown-divider"></div>
+            <form class="needs-validation col-sm-10" th:action="@{'/edit-request/' + ${path} + '/response'}" th:object="${busRouteEditRequestForm}" method="post" novalidate>
+                <div class="form-group">
+                    <label for="status">요청 상태</label>
+                    <select id="status" class="custom-select mr-sm-2" th:field="*{status}">
+                        <option value="RECIEVED">접수됨</option>
+                        <option value="REVIEWING">검토중</option>
+                        <option value="DONE">완료</option>
+                        <option value="DENIED">거부됨</option>
+                    </select>
+                </div>
+                <textarea id="description" type="textarea" th:field="*{description}" class="d-none"></textarea>
+                <div class="form-group">
+                    <label for="response">답변</label>
+                    <small id="responseHelp" class="form-text text-muted">
+                        답변을 아래 입력해 주세요.
+                    </small>
+                    <textarea id="response" type="textarea" th:field="*{response}" class="editor form-control"
+                              placeholder="수정 요청사항 주세요." aria-describedby="fullDescriptionHelp" required></textarea>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary btn-block" type="submit" aria-describedby="submitHelp">답변하기</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="fragments.html :: footer"></div>
+    </div>
+    <footer th:replace="header-footer.html :: footer"></footer>
+    <script th:replace="fragments.html :: form-validation"></script>
+    <script th:replace="fragments.html :: editor-script"></script>
+</body>
+</html>

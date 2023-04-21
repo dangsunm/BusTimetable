@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <div th:fragment="editor-script">
     <script src="/node_modules/summernote/dist/summernote-bs4.js"></script>
@@ -124,6 +125,94 @@
                 return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LLLL');
             });
         })
+    </script>
+</div>
+
+<div th:fragment="comment(path)">
+    <div class="row px-3 justify-content-center pt-3 pb-3" th:if="${comments.isEmpty()}">
+        <small class="col-10">작성된 댓글이 없습니다.</small>
+    </div>
+    <div class="row px-3 py-3 justify-content-center" th:if="!${comments.isEmpty()}" th:each="c:${comments}" th:id="comment+${c.getId()}">
+        <div class="col-10 bg-white px-2 py-2">
+            <div class="col-10 text-left">
+                <span th:text="${c.getAccount().getUsername()}">Author</span> | <span th:text="${c.getCreatedDate()}"></span>
+            </div>
+            <div class="col-10 text-left" th:text="${c.getComment()}">Comment Text</div>
+            <div sec:authorize="isAuthenticated()" th:if="${c.isAuthor(#authentication.principal)}"
+                 class="col-10 text-right justify-content-end">
+                <button type="submit" class="btn btn-sm btn-success" th:onclick='go_to_modify_comment(${path},${c.getId()})'>수정</button>
+                <form action="#" th:action="@{ ${path} + '/commnent-delete?cid='+${c.getId()}}" method="post" novalidate>
+                    <button type="submit" class="btn btn-sm btn-warning">삭제</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 댓글 작성 창-->
+    <div sec:authorize="isAuthenticated()" class="">
+        <form class="needs-validation" th:action="@{ ${path} + '/new-comment'}" th:object="${commentForm}" method="post" novalidate>
+            <div class="row px-3 justify-content-center">
+                    <textarea id="comment" type="textarea" th:field="*{comment}"
+                              class="form-control col-10 pt-3 pb-3"  maxlength="250"
+                              placeholder="250자 내에서 댓글을 입력해 주세요." aria-describedby="shortDescriptionHelp" required></textarea>
+                <div class="col-10 text-right justify-content-end">
+                    <button type="submit" class="btn btn-sm btn-success">등록</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script type="application/javascript">
+        /* function https://coie117.tistory.com/25  https://github.com/rwd117/testboard/ */
+        function go_to_modify_comment(cid, path){
+
+            var commentsview = "";
+            var url = "/board/ + ${"+path+"} + /modify-comment?cid= " +cid ;
+            commentsview +='<div class="col-10">';
+            commentsview +='    <span th:text="${c.getAccount().getUsername()}">Author</span> | ';
+            commentsview +='    <span th:text="${c.getCreatedDate()}"></span>';
+            commentsview +='</div>';
+            commentsview +='<form class="needs-validation" th:action="@{}';
+            commentsview +='th:object="${commentForm}" method="post" noValidate>';
+            commentsview +='    <div class="row px-3 justify-content-center">';
+            commentsview +='        <textarea id="comment" type="textarea" th:field="*{comment}"';
+            commentsview +='                v class="form-control col-10 pt-3 pb-3" maxLength="250"';
+            commentsview +='                  placeholder="250자 내에서 댓글을 입력해 주세요." aria-describedby="shortDescriptionHelp"';
+            commentsview +='                  required></textarea>';
+            commentsview +='        <div class="col-10 text-right justify-content-end">';
+            commentsview +='            <button type="submitv class="btn btn-sm btn-success">수정하기</button>';
+            commentsview +='        </div>';
+            commentsview +='    </div>';
+            commentsview +='</form>';
+
+            $('#comment'+cid).replaceWith(commentsview);
+        }
+
+        function modify_comment(comment_idx, board_idx){
+
+            var reply_content = $("#reply_edit_content"+comment_idx).val();
+            var allParams = {"comment_idx": comment_idx, "board_idx": board_idx, "comment_text": reply_content};
+            var ans = confirm("정말 수정하시겠습니까?");
+
+            if(ans){
+                $.ajax({
+                    type : "post",
+                    url : "/comment_modify_ok.do",
+                    timeout : 30000,
+                    cache : false,
+                    data : allParams,
+                    datatype : 'html',
+                    success : function(data) {
+                        $("#main_contents").html(data);
+                    },
+                    error : function(data, status, error) {
+                        alert("통신데이터 값 : " + data);
+                        $("#main_contents").html(data);
+                    }
+                });
+            }else{
+                return false;
+            }
+        }
     </script>
 </div>
 

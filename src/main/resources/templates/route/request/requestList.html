@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="header-footer.html :: head"></head>
+<nav th:replace="navbar.html :: navbar"></nav>
+<body class="bg-light">
+  <div class="container">
+      <div class="row justify-content-center pt-3">
+        <h2 class="col-10">버스 노선 수정 요청 목록</h2>
+      </div>
+
+      <div class="row justify-content-center pt-3" th:if="${routeReqPage.isEmpty()}">
+        <p class="col-10">등록된 요청이 없습니다.</p>
+      </div>
+      <div class="row justify-content-center pt-3" th:if="${!routeReqPage.isEmpty()}" >
+        <table class="table col-10">
+            <tr>
+                <th scope="col">요청일시</th>
+                <th scope="col">수정 요청 노선</th>
+                <th scope="col">작성자</th>
+                <th scope="col">상태</th>
+                <th scope="col">기타</th>
+            </tr>
+            <tr th:each="req:${routeReqPage.getContent()}">
+                <td th:text="${req.createdDate}"></td>
+                <td><a th:href="@{'/edit-request/' + ${req.id} + '?page=' + ${routeReqPage.getNumber()}}" th:text="${req.getRoute().getTitle()}">Title</a></td>
+                <td th:text="${req.getAccount().getUsername()}"></td>
+                <td th:if="${req.status==T(com.bustime.module.route.request.RouteEditRequestStatus).RECIEVED}">수신됨</td>
+                <td th:if="${req.status==T(com.bustime.module.route.request.RouteEditRequestStatus).REVIEWING}">검토중</td>
+                <td th:if="${req.status==T(com.bustime.module.route.request.RouteEditRequestStatus).DONE}">완료</td>
+                <td th:if="${req.status==T(com.bustime.module.route.request.RouteEditRequestStatus).DENIED}">거부됨</td>
+                <td>
+                    <form sec:authorize="isAuthenticated()" th:if="${req.getRoute().isManagedBy(#authentication.principal)}"
+                          action="#" th:action="@{'/edit-request/' + ${req.path()} + '/response'}" method="get" novalidate>
+                        <button type="submit" class="btn btn-sm btn-outline-secondary me-2">답변하기</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+      </div>
+      <div class="row justify-content-center">
+          <div class="col-sm-10">
+              <nav>
+                  <ul class="pagination justify-content-center">
+                      <li class="page-item" th:classappend="${!routeReqPage.hasPrevious()}? disabled">
+                          <a th:href="@{'/edit-request?page=' + ${routeReqPage.getNumber() - 1}}"
+                             class="page-link" tabindex="-1" aria-disabled="true">
+                              Previous
+                          </a>
+                      </li>
+                      <li class="page-item" th:classappend="${i == routeReqPage.getNumber()}? active"
+                          th:each="i: ${#numbers.sequence(0, routeReqPage.getTotalPages() - 1)}">
+                          <a th:href="@{'/edit-request?page=' + ${i}}"
+                             class="page-link" href="#" th:text="${i + 1}">1</a>
+                      </li>
+                      <li class="page-item" th:classappend="${!routeReqPage.hasNext()}? disabled">
+                          <a th:href="@{'/edit-request?page=' + ${routeReqPage.getNumber() + 1}}"
+                             class="page-link">
+                              Next
+                          </a>
+                      </li>
+                  </ul>
+              </nav>
+          </div>
+  </div>
+  <footer th:replace="header-footer.html :: footer"></footer>
+  <script th:replace="fragments.html :: date-time"></script>
+</body>
+</html>

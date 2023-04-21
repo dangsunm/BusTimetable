@@ -36,6 +36,8 @@ public class BusRouteForm {
     @Length(max=10)
     private String operator;
 
+    private RouteStatus routeStatus = RouteStatus.ACTIVE;
+
     @NotBlank
     private String description;
 

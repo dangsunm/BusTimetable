@@ -6,11 +6,11 @@
 <nav th:replace="navbar.html :: navbar"></nav>
 <body class="bg-light">
     <div class="container">
-        <div class="row pt-4 text-left justify-content-center bg-light">
+        <div class="row pt-4 text-left justify-content-center">
             <div class="col-6">
-            <a href="#" class="text-decoration-none pt-3 pb-3 " th:href="@{'/route/' + ${path}}">
-                <span class="h2" th:text="${busRoute.title}"> 노선명</span>
-            </a>
+                <a href="#" class="text-decoration-none pt-3 pb-3 " th:href="@{'/route/' + ${path}}">
+                    <span class="h2" th:text="${busRoute.title}">노선명</span>
+                </a>
             </div>
             <div class="col-4 text-right justify-content-end">
                 <p>Last Updated:
@@ -32,6 +32,22 @@
                 </span>
             </div>
         </div>
+        <div class="row justify-content-center bg-light">
+            <div class="col-10">
+                <p>
+                    <span th:each="tag: ${busRoute.tags}"
+                          class="font-weight-light text-monospace badge badge-pill badge-info mr-3">
+                    <a th:href="@{'/search/tag/' + ${tag.title}}" class="text-decoration-none text-white">
+                        <i class="fa fa-tag"></i> <span th:text="${tag.title}">Tag</span>
+                    </a>
+<!--                    <a th:href="@{'/search/zone/' + ${zone.id}}" class="text-decoration-none text-white">-->
+<!--                        <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}">City</span>-->
+<!--                    </a>-->
+                    </span>
+                </p>
+            </div>
+        </div>
+
         <div class="row px-3 justify-content-center">
             <table class="table" style="width:25%">
                 <tr>
@@ -50,6 +66,12 @@
                     <th scope="row">종별</th>
                     <td th:text="${busRoute.routeType}">Larry</td>
                 </tr>
+                <tr>
+                    <th scope="row">상태</th>
+                    <td th:if="${busRoute.routeStatus == T(com.bustime.module.route.RouteStatus).ACTIVE}">최신 상태</td>
+                    <td th:if="${busRoute.routeStatus==T(com.bustime.module.route.RouteStatus).OUTDATED}">오래된 정보</td>
+                    <td th:if="${busRoute.routeStatus==T(com.bustime.module.route.RouteStatus).CLOSED}">폐선/운행 중단</td>
+                </tr>
             </table>
         </div>
         <div class="row px-3 justify-content-center">
@@ -57,14 +79,19 @@
         </div>
         <div class="row px-3 justify-content-center" sec:authorize="isAuthenticated()" th:if="${busRoute.isManagedBy(#authentication.principal)}">
             <form action="#" th:action="@{'/route/' + ${path} + '/edit'}" method="get" novalidate>
-                <button type="submit" class="btn btn-sm btn-outline-info ml-3">수정하기</button>
+                <button type="submit" class="btn btn-sm btn-outline-info ms-2">수정하기</button>
             </form>
             <form action="#" th:action="@{'/route/' + ${path} + '/delete'}" method="post" novalidate>
                 <button type="submit" class="btn btn-sm btn-outline-warning">삭제하기</button>
             </form>
         </div>
+        <div class="row px-3 justify-content-center" sec:authorize="isAuthenticated()" th:if="!${busRoute.isManagedBy(#authentication.principal)}"
+            <form action="#" th:action="@{'/route/' + ${path} + '/request-edit'}" method="get" novalidate>
+                <button type="submit" class="btn btn-sm btn-outline-secondary me-2">수정 요청하기</button>
+            </form>
+        </div>
     </div>
-    </div>
+
 
     <footer th:replace="header-footer.html :: footer"></footer>
     <script type="application/javascript">

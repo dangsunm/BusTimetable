@@ -23,6 +23,7 @@
                 </div>
             </div>
         </div>
+
         <div class="row px-3 justify-content-center">
             <table class="table col-10 pt-3">
                 <tr>
@@ -42,27 +43,14 @@
                 </tr>
             </table>
         </div>
-        <div class="row px-3 justify-content-center">
-            <div class="col-10 pt-3 pb-3">
-                <span class="h5">댓글</span>
-            </div>
+
+        <!-- 댓글 -->
+        <div class="row px-3 pt-3 pb-3 justify-content-center">
+            <span class="h4 col-10">댓글</span>
         </div>
-        <!-- 댓글 작성 창-->
-        <div sec:authorize="isAuthenticated()">
-            <form class="needs-validation" th:action="@{'/board/' + ${path} + '/new-comment'}" th:object="${commentForm}" method="post" novalidate>
-                <div class="row px-3 justify-content-center">
-    <!--                <textarea id="comment" type="textarea" th:field="*{comment}"-->
-                    <textarea id="comment" type="textarea"
-                              class="form-control col-10 pt-3 pb-3"  maxlength="250"
-                              placeholder="250자 내에서 댓글을 입력해 주세요." aria-describedby="shortDescriptionHelp" required></textarea>
-                </div>
-                <div class="row px-3 justify-content-center">
-                    <div class="col-10 text-right justify-content-end">
-                        <button type="submit" class="btn btn-sm btn-success">등록</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+
+        <div th:replace="fragments.html::comment(${path})" class="justify-content-center"></div>
+
         <!-- 목록 링크 -->
         <div class="row px-3 justify-content-center">
             <a class="btn btn-primary" th:href="@{/board(page=${page})}">목록</a>

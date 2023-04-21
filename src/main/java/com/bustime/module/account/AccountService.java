@@ -152,4 +152,8 @@ public class AccountService implements UserDetailsService {
         }
         return true;
     }
+
+    public boolean isAdmin (Account account){
+        return account.getUsertype().equals("A");
+    }
 }

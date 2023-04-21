@@ -6,31 +6,66 @@
 <nav th:replace="navbar.html :: navbar"></nav>
 <body class="bg-light">
   <div class="container">
-    <div class="container mt-3">
-      <div class="row justify-content-left">
-        <h2>버스 노선 목록</h2>
+      <div class="row justify-content-center pt-3">
+        <h2 class="col-10">버스 노선 목록</h2>
       </div>
       <!-- TODO: 검색창 추가예정 -->
-      <div class="row font-weight-light" th:if="${#lists.isEmpty(routes)}">
-        등록된 노선이 없습니다.
+      <div class="row justify-content-center pt-3 ">
+          <form class="col-5 form-inline input-group" >
+              <input type="text" class="form-control"  placeholder="Search" aria-label="Search">
+              <button type="button" class="btn btn-primary">찾아보기</button>
+          </form>
       </div>
-      <div class="row justify-content-center" th:if="${!#lists.isEmpty(routes)}" >
-        <table class="table col-10 pt-3">
+      <div class="row justify-content-center pt-3" th:if="${routePage.isEmpty()}">
+        <p class="col-10">등록된 노선이 없습니다.</p>
+      </div>
+      <div class="row justify-content-center pt-3" th:if="${!routePage.isEmpty()}" >
+        <table class="table col-10">
           <tr>
             <th scope="col">지역</th>
             <th scope="col">노선번호</th>
             <th scope="col">운송회사</th>
             <th scope="col">최종 수정 일시</th>
+            <th scope="col">상태</th>
           </tr>
-          <tr th:each="r:${routes}">
-                <td th:text="${r.city}"></td>
-                <td><a th:href="@{'/route/' + ${r.id}}" th:text="${r.title}">Title</a></td>
-                <td th:text="${r.operator}"></td>
-                <td th:text="${r.publishedDateTime}"></td>
+            <tr th:each="route:${routePage.getContent()}">
+              <td th:text="${route.city}"></td>
+              <td><a th:href="@{'/route/' + ${route.id} + '?page=' + ${routePage.getNumber()}}" th:text="${route.title}">Title</a></td>
+              <td th:text="${route.operator}"></td>
+              <td th:text="${route.publishedDateTime}"></td>
+              <td th:if="${route.routeStatus==T(com.bustime.module.route.RouteStatus).ACTIVE}">최신 상태</td>
+              <td th:if="${route.routeStatus==T(com.bustime.module.route.RouteStatus).OUTDATED}">오래된 정보</td>
+              <td th:if="${route.routeStatus==T(com.bustime.module.route.RouteStatus).CLOSED}">폐선/운행 중단</td>
           </tr>
         </table>
       </div>
-    </div>
+      <div class="row justify-content-center">
+          <div class="col-sm-10">
+              <nav>
+                  <ul class="pagination justify-content-center">
+                      <li class="page-item" th:classappend="${!routePage.hasPrevious()}? disabled">
+                          <a th:href="@{'/route?page=' + ${routePage.getNumber() - 1}}"
+                             class="page-link" tabindex="-1" aria-disabled="true">
+                              Previous
+                          </a>
+                      </li>
+                      <li class="page-item" th:classappend="${i == routePage.getNumber()}? active"
+                          th:each="i: ${#numbers.sequence(0, routePage.getTotalPages() - 1)}">
+                          <a th:href="@{'/route?page=' + ${i}}"
+                             class="page-link" href="#" th:text="${i + 1}">1</a>
+                      </li>
+                      <li class="page-item" th:classappend="${!routePage.hasNext()}? disabled">
+                          <a th:href="@{'/route?page=' + ${routePage.getNumber() + 1}}"
+                             class="page-link">
+                              Next
+                          </a>
+                      </li>
+                  </ul>
+              </nav>
+          </div>
+      <div class="row justify-content-center" sec:authorize="isAuthenticated()" >
+          <button type="button" th:onclick="|location.href='@{'/new-route'}'|" class="btn btn-primary">새 노선 등록하기</button>
+      </div>
   </div>
   <footer th:replace="header-footer.html :: footer"></footer>
   <script th:replace="fragments.html :: date-time"></script>

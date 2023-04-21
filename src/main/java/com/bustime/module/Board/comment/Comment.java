@@ -2,6 +2,7 @@ package com.bustime.module.Board.comment;
 
 import com.bustime.module.Board.Board;
 import com.bustime.module.account.Account;
+import com.bustime.module.account.UserAccount;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -25,6 +26,8 @@ public class Comment {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String comment; // 댓글 내용
 
+    private Long pcid;
+
     @CreatedDate
     private LocalDateTime createdDate;
 
@@ -42,5 +45,9 @@ public class Comment {
     public void publish() {
         this.createdDate = LocalDateTime.now();
         this.modifiedDate = LocalDateTime.now();
+    }
+
+    public boolean isAuthor(UserAccount userAccount) {
+        return this.account.getUsername().equals(userAccount.getUsername());
     }
 }

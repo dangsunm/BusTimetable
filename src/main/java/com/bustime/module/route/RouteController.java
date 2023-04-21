@@ -6,11 +6,16 @@ import com.bustime.module.Tag.TagRepository;
 import com.bustime.module.Tag.TagService;
 import com.bustime.module.account.Account;
 import com.bustime.module.account.CurrentUser;
+import com.bustime.module.route.request.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,22 +36,29 @@ public class RouteController {
 
     private final BusRouteService busRouteService;
     private final BusRouteRepository busRouteRepository;
+    private final RouteEditRequestRepository routeEditRequestRepository;
     private final TagService tagService;
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
 
     @GetMapping ("/route")
-    public String viewRouteList (Model model) {
+    public String viewRouteList (Model model,
+                                 @PageableDefault(size = 10,
+                                         sort = "publishedDateTime",
+                                         direction = Sort.Direction.DESC)
+                                 Pageable pageable)
+    {
+        Page<BusRoute> routePage = busRouteRepository.findAll(pageable);
+        model.addAttribute("routePage", routePage);
+
         String searchCondition = "normal";
         model.addAttribute(searchCondition);
-        List<BusRoute> routes = busRouteRepository.getBusRouteByIsNoLongerOperatingOrderByPublishedDateTimeDesc(false);
-        model.addAttribute("routes",routes);
+
         return "route/list";
     }
 
     @GetMapping("/new-route")
-
     public String newRouteForm(@CurrentUser Account account, Model model) throws JsonProcessingException {
         model.addAttribute(account);
         model.addAttribute(new BusRouteForm());
@@ -56,6 +68,7 @@ public class RouteController {
 
         return "route/new";
     }
+
     @PostMapping("/new-route")
     public String RegisterNewRoute (@CurrentUser Account account, @Valid BusRouteForm busRouteForm, Model model, Errors errors){
         if (errors.hasErrors()) {
@@ -97,14 +110,20 @@ public class RouteController {
     }
 
     @GetMapping("/route/{path}")
-    private String viewRoute
-        //(@CurrentUser Account account, @PathVariable String path, Model model) {
-        (@PathVariable String path, Model model)
-        {
+    private String viewRoute (@PathVariable String path, Model model,
+            @RequestParam(name="page", required = false) String pageN)
+    {
         BusRoute busroute = busRouteService.getRoute(path);
         //model.addAttribute(account);
+
         model.addAttribute(busroute);
         model.addAttribute(path);
+
+        if (pageN == null){
+            pageN = "0";
+        }
+        model.addAttribute("page", pageN);
+
         return "route/view";
     }
 
@@ -158,9 +177,92 @@ public class RouteController {
         if (tag == null) {
             return ResponseEntity.badRequest().build();
         }
-
         busRouteService.removeTag(path, tag);
         return ResponseEntity.ok().build();
     }
 
+    /* 노선내 수정 요청과 관련한 Mapping */
+    @GetMapping("/route/{path}/request-edit")
+    public String EditRequestForm(@CurrentUser Account account, Model model, @PathVariable String path){
+        BusRoute route = busRouteService.getRoute(path);
+        model.addAttribute(account);
+        model.addAttribute(path);
+        model.addAttribute(route);
+        model.addAttribute(modelMapper.map(route, BusRouteEditRequestForm.class));
+        return "route/request/modifyRequest";
+    }
+
+    @PostMapping("/route/{path}/request-edit")
+    public String sendEditRequest(@CurrentUser Account account, @PathVariable String path,
+                                  @Valid BusRouteEditRequestForm form , Errors errors,
+                                  Model model, RedirectAttributes attributes) {
+        BusRoute route = busRouteService.getRoute(path);
+
+        if (errors.hasErrors()) {
+            model.addAttribute(account);
+            model.addAttribute(route);
+            return "route/request/modifyRequest";
+        }
+
+        busRouteService.RequestUpdateRoute(modelMapper.map(form, BusRouteEditRequest.class), account, route);
+        attributes.addFlashAttribute("message", "노선 수정 요청을 전송했습니다.");
+        String routeId = route.getId().toString();
+        return "redirect:/route/" + URLEncoder.encode(routeId, StandardCharsets.UTF_8);
+    }
+
+    @GetMapping("/edit-request")
+    public String editRequestList(Model model,
+            @PageableDefault(size = 10, sort = "createdDate", direction = Sort.Direction.DESC)
+            Pageable pageable)
+    {
+        Page<BusRouteEditRequest> routeReqPage = routeEditRequestRepository.findAll(pageable);
+        model.addAttribute("routeReqPage", routeReqPage);
+
+        return "route/request/requestList";
+    }
+
+    @GetMapping("/edit-request/{path}")
+    public String viewEditRequest(Model model, @PathVariable String path, @RequestParam(name="page", required = false) String pageN)
+    {
+        BusRouteEditRequest request = busRouteService.getEditRequest(path);
+        model.addAttribute("request", request);
+        model.addAttribute(path);
+
+        if (pageN == null){
+            pageN = "0";
+        }
+        model.addAttribute("page", pageN);
+
+        return "route/request/requestDetails";
+    }
+
+    @GetMapping("/edit-request/{path}/response")
+    public String responseRequestForm(@CurrentUser Account account, Model model, @PathVariable String path)
+    {
+        BusRouteEditRequest request = busRouteService.getEditRequest(path);
+        request.getRoute().isManagedBy(account);
+        model.addAttribute("request", request);
+        model.addAttribute(new BusRouteEditRequestForm());
+        model.addAttribute(path);
+        model.addAttribute(modelMapper.map(request, BusRouteEditRequestForm.class));
+
+        return "route/request/handleRequest";
+    }
+
+    @PostMapping("/edit-request/{path}/response")
+    public String responseEditRequest (@CurrentUser Account account, @PathVariable String path,
+                                        @Valid BusRouteEditRequestForm form , Errors errors, Model model) {
+        BusRouteEditRequest request = busRouteService.getEditRequest(path);
+
+        if (errors.hasErrors()) {
+            model.addAttribute(account);
+            model.addAttribute(request);
+            return "route/request/handleRequest";
+        }
+
+        busRouteService.updateRouteProcessUpdate(form, request);
+        String requestId = request.getId().toString();
+
+        return "redirect:/edit-request/" + URLEncoder.encode(requestId, StandardCharsets.UTF_8);
+    }
 }

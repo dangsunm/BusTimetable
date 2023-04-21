@@ -2,6 +2,9 @@ package com.bustime.module.route;
 
 import com.bustime.module.Tag.Tag;
 import com.bustime.module.account.Account;
+import com.bustime.module.route.request.BusRouteEditRequest;
+import com.bustime.module.route.request.BusRouteEditRequestForm;
+import com.bustime.module.route.request.RouteEditRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
@@ -9,8 +12,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
 import java.util.Optional;
 import java.util.Set;
+
+import static com.bustime.module.route.request.RouteEditRequestStatus.RECIEVED;
 
 @Service
 @Transactional
@@ -18,6 +24,7 @@ import java.util.Set;
 public class BusRouteService {
 
     private final BusRouteRepository busRouteRepository;
+    private final RouteEditRequestRepository routeEditRequestRepository;
     private final ModelMapper modelMapper;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -33,6 +40,11 @@ public class BusRouteService {
         route = this.busRouteRepository.getById(Long.parseLong(path));
         checkIfExistingRoute(route);
         return route;
+    }
+
+    public BusRouteEditRequest getEditRequest(String path) {
+        return this.routeEditRequestRepository.getById(Long.parseLong(path));
+
     }
 
     public BusRoute getRouteForManager(Account account, String path) {
@@ -103,4 +115,14 @@ public class BusRouteService {
         }
     }
 
+    public void RequestUpdateRoute(BusRouteEditRequest request, Account account, BusRoute route) {
+        request.setAccount(account);
+        request.setRoute(route);
+        request.publish();
+        routeEditRequestRepository.save(request);
+    }
+
+    public void updateRouteProcessUpdate(@Valid BusRouteEditRequestForm form, BusRouteEditRequest request) {
+        modelMapper.map(form, request);
+    }
 }
