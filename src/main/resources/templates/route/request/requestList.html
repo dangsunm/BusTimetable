@@ -23,7 +23,7 @@
                 <th scope="col">기타</th>
             </tr>
             <tr th:each="req:${routeReqPage.getContent()}">
-                <td th:text="${req.createdDate}"></td>
+                <td class="date-weekday-time" .fromNow th:text="${req.createdDate}"></td>
                 <td><a th:href="@{'/edit-request/' + ${req.id} + '?page=' + ${routeReqPage.getNumber()}}" th:text="${req.getRoute().getTitle()}">Title</a></td>
                 <td th:text="${req.getAccount().getUsername()}"></td>
                 <td th:if="${req.status==T(com.bustime.module.route.request.RouteEditRequestStatus).RECIEVED}">수신됨</td>

@@ -151,9 +151,10 @@ public class RouteController {
 
     /* Tag 관련 추가 및 삭제 */
     @GetMapping("/route/{path}/tags")
-    public String updateTags(@PathVariable String path, Model model) throws JsonProcessingException {
+    public String updateTagsForm(@PathVariable String path, Model model) throws JsonProcessingException {
         Set<Tag> tags = busRouteService.getTags(path);
         model.addAttribute("tags", tags.stream().map(Tag::getTitle).collect(Collectors.toList()));
+        model.addAttribute("route", busRouteService.getRoute(path));
 
         List<String> allTags = tagRepository.findAll().stream().map(Tag::getTitle).collect(Collectors.toList());
         model.addAttribute("whitelist", objectMapper.writeValueAsString(allTags));

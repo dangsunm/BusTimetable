@@ -5,11 +5,14 @@
 
 <body class="bg-light">
     <div class="container">
-        <div class="row">
-            <h2 class="col-sm-12">Tag</h2>
+        <div class="row justify-content-center">
+            <h2 class="col-10 text-left">태그 관리</h2>
         </div>
-        <div class="row">
-            <div class="col-sm-12">
+        <div class="row justify-content-center">
+            <h4 class="col-10 text-left"><a th:href="@{'/route/'+${route.getId()}}" th:text="${'<< '+route.getTitle()+'로 돌아가기'}"></a> </h4>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-10">
                 <div class="alert alert-info" role="alert">
                        태그를 입력하고 콤마(,) 또는 엔터를 입력하세요.
                 </div>

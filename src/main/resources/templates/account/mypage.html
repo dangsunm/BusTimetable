@@ -12,12 +12,14 @@
             <div class="col-md-10">
                 <h2>안녕하세요, <span th:text="${account.username}">UserName</span>님.</h2>
             </div>
+
             <div class="col-md-8">
                 <div class="row font-weight-light" th:if="${#lists.isEmpty(routeWatching)}">
                     주시중인 노선이 없습니다.
                 </div>
                 <div th:if="${!#lists.isEmpty(routeWatching)}" >
                     <h4>My WatchList</h4>
+                    <p>내가 주시중인 노선 수: <span th:text="${routeWatching.size()}">n</span>개</p>
                     <table class="table col-10 pt-3">
                         <tr>
                             <th scope="col">지역</th>
@@ -34,12 +36,12 @@
                     </table>
                 </div>
             </div>
-
             <div class="col-md-2">
                 <h5 class="font-weight-light">나의 태그</h5>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item" th:each="tag: ${account.tags}">
-                        <i class="fa fa-tag"></i> <span th:text="${tag.title}"></span>
+                        <i class="fa fa-tag"></i>
+                        <a class="text-reset" th:text="${tag.title}" th:href="@{'/search/tag/' + ${tag.title}}">Tag</a>
                     </li>
                     <li class="list-group-item" th:if="${account.tags.size() == 0}">
                         <a th:href="@{/settings/tags}" class="btn-text">관심 주제</a>를 등록하세요.

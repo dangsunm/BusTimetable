@@ -32,17 +32,14 @@
                 </span>
             </div>
         </div>
-        <div class="row justify-content-center bg-light">
+        <div class="row justify-content-center">
             <div class="col-10">
                 <p>
                     <span th:each="tag: ${busRoute.tags}"
                           class="font-weight-light text-monospace badge badge-pill badge-info mr-3">
-                    <a th:href="@{'/search/tag/' + ${tag.title}}" class="text-decoration-none text-white">
-                        <i class="fa fa-tag"></i> <span th:text="${tag.title}">Tag</span>
-                    </a>
-<!--                    <a th:href="@{'/search/zone/' + ${zone.id}}" class="text-decoration-none text-white">-->
-<!--                        <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}">City</span>-->
-<!--                    </a>-->
+                        <a th:href="@{'/search/tag/' + ${tag.title}}" class="text-decoration-none text-white">
+                            <i class="fa fa-tag"></i> <span th:text="${tag.title}">Tag</span>
+                        </a>
                     </span>
                 </p>
             </div>
@@ -79,19 +76,23 @@
         </div>
         <div class="row px-3 justify-content-center" sec:authorize="isAuthenticated()" th:if="${busRoute.isManagedBy(#authentication.principal)}">
             <form action="#" th:action="@{'/route/' + ${path} + '/edit'}" method="get" novalidate>
-                <button type="submit" class="btn btn-sm btn-outline-info ms-2">수정하기</button>
+                <button type="submit" class="btn btn-sm btn-secondary my-2">수정하기</button>
+            </form>
+            <form action="#" th:action="@{'/route/' + ${path} + '/tags'}" method="get" novalidate>
+                <button type="submit" class="btn btn-sm btn-secondary my-2">태그 관리하기</button>
             </form>
             <form action="#" th:action="@{'/route/' + ${path} + '/delete'}" method="post" novalidate>
-                <button type="submit" class="btn btn-sm btn-outline-warning">삭제하기</button>
+                <button type="submit" class="btn btn-sm btn-warning my-2">삭제하기</button>
             </form>
         </div>
-        <div class="row px-3 justify-content-center" sec:authorize="isAuthenticated()" th:if="!${busRoute.isManagedBy(#authentication.principal)}"
-            <form action="#" th:action="@{'/route/' + ${path} + '/request-edit'}" method="get" novalidate>
-                <button type="submit" class="btn btn-sm btn-outline-secondary me-2">수정 요청하기</button>
-            </form>
+        <div sec:authorize="isAuthenticated()" th:if="!${busRoute.isManagedBy(#authentication.principal)}">
+            <div class="row px-3 justify-content-center">
+                <form action="#" th:action="@{'/route/' + ${path} + '/request-edit'}" method="get" novalidate>
+                    <button type="submit" class="btn btn-sm btn-secondary me-2">수정 요청하기</button>
+                </form>
+            </div>
         </div>
     </div>
-
 
     <footer th:replace="header-footer.html :: footer"></footer>
     <script type="application/javascript">
@@ -99,5 +100,6 @@
             $('[data-toggle="tooltip"]').tooltip()
         })
     </script>
+    <script th:replace="fragments.html :: date-time"></script>
 </body>
 </html>

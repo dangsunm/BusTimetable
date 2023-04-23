@@ -44,6 +44,9 @@ public class BoardController {
         model.addAttribute("commentForm", new CommentForm());
         return "board/list";
     }
+
+
+
     @GetMapping("/board/{path}")
     private String viewRoute (@PathVariable String path, Model model,
                               @RequestParam(name="page", required = false) String pageN)

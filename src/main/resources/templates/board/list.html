@@ -20,7 +20,7 @@
         <tr th:each="board:${boardPage.getContent()}">
           <td><a th:href="@{'/board/' + ${board.id} + '?page=' + ${boardPage.getNumber()}}" th:text="${board.title}">Title</a></td>
           <td th:text="${board.getAccount().getUsername()}"></td>
-          <td th:text="${board.createdDate}"><`/td>
+          <td class="date-weekday-time" .time th:text="${board.createdDate}"><`/td>
           <td th:text="${board.view}"></td>
         </tr>
       </table>

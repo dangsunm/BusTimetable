@@ -135,7 +135,8 @@
     <div class="row px-3 py-3 justify-content-center" th:if="!${comments.isEmpty()}" th:each="c:${comments}" th:id="comment+${c.getId()}">
         <div class="col-10 bg-white px-2 py-2">
             <div class="col-10 text-left">
-                <span th:text="${c.getAccount().getUsername()}">Author</span> | <span th:text="${c.getCreatedDate()}"></span>
+                <span th:text="${c.getAccount().getUsername()}">Author</span> |
+                <span class="date-weekday-time" .fromNow th:text="${c.getCreatedDate()}"></span>
             </div>
             <div class="col-10 text-left" th:text="${c.getComment()}">Comment Text</div>
             <div sec:authorize="isAuthenticated()" th:if="${c.isAuthor(#authentication.principal)}"

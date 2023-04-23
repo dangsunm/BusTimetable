@@ -4,6 +4,8 @@ import com.bustime.module.Tag.Tag;
 import com.bustime.module.account.Account;
 import com.bustime.module.account.UserAccount;
 import lombok.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import javax.persistence.*;
 import java.net.URLEncoder;
@@ -37,7 +39,7 @@ public class BusRoute {
     private Set<Account> watchers = new HashSet<>();
 
     @Column(nullable = false)
-    private String Title; // 검색에 표출할 제목
+    private String title; // 검색에 표출할 제목
 
     @Column(nullable = false)
     private String City;

@@ -28,7 +28,7 @@
             <table class="table col-10 pt-3">
                 <tr>
                     <th scope="row">작성 일시</th>
-                    <td th:text="${board.createdDate}">Mark</td>
+                    <td th:text="${board.createdDate}" class="date-weekday-time" .fromNow>Mark</td>
                 </tr>
                 <tr>
                     <th scope="row">조회수</th>
@@ -58,6 +58,7 @@
     </div>
 
     <footer th:replace="header-footer.html :: footer"></footer>
+    <script th:replace="fragments.html :: date-time"></script>
     <script type="application/javascript">
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()

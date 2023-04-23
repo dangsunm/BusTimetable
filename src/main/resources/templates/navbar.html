@@ -4,7 +4,9 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
-  <a class="navbar-brand" href="/" th:href="@{/}">Navbar</a>
+  <a class="navbar-brand" href="/" th:href="@{/}">
+    <img src="/images/front-of-bus.png" width="35" height="35"> BusTimeTable
+  </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -20,6 +22,7 @@
           게시판
         </a>
         <div class="dropdown-menu">
+          <a class="dropdown-item" th:href="@{/notice}" href="#">공지사항</a>
           <a class="dropdown-item" th:href="@{/board}" href="#">자유게시판</a>
           <a class="dropdown-item" th:href="@{/edit-request}" href="#">수정 요청</a>
         </div>
@@ -42,8 +45,8 @@
         </div>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+    <form th:action="@{/search/route}" class="form-inline my-2 my-lg-0" method="get">
+      <input name="keyword"  class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
   </div>
