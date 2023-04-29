@@ -7,5 +7,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface RouteEditRequestRepository extends JpaRepository<BusRouteEditRequest, Long> {
 
-    BusRouteEditRequest getById(long parseLong);
+    BusRouteEditRequest getById(long path);
 }

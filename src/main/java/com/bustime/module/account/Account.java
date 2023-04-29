@@ -44,18 +44,15 @@ public class Account {
 
     private LocalDateTime passwordResetTokenGeneratedAt;
 
-
     @ManyToMany
     private Set<Tag> tags = new HashSet<>();
-
 
     public void generateEmailCheckToken() {
         this.emailCheckToken = UUID.randomUUID().toString();
         this.emailCheckTokenGeneratedAt = LocalDateTime.now();
     }
     public boolean canSendConfirmEmail() {
-        //return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
-        return true;
+        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
     }
 
     public void generatePasswordRestToken() {
@@ -78,6 +75,10 @@ public class Account {
     public void completeSignUp() {
         this.emailVerified = true;
         this.joinedAt = LocalDateTime.now();
+    }
+
+    public boolean isModOrAdmin(Account account){
+       return (this.usertype.equals("A") || this.usertype.equals("M"));
     }
 
 }

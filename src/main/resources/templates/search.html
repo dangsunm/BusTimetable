@@ -32,7 +32,7 @@
               <td th:text="${route.city}"></td>
               <td><a th:href="@{'/route/' + ${route.id} + '?page=' + ${routePage.getNumber()}}" th:text="${route.title}">Title</a></td>
               <td th:text="${route.operator}"></td>
-              <td th:text="${route.publishedDateTime}"></td>
+              <td class="date-weekday-time" .fromNow th:text="${route.publishedDateTime}"></td>
               <td th:if="${route.routeStatus==T(com.bustime.module.route.RouteStatus).ACTIVE}">최신 상태</td>
               <td th:if="${route.routeStatus==T(com.bustime.module.route.RouteStatus).OUTDATED}">오래된 정보</td>
               <td th:if="${route.routeStatus==T(com.bustime.module.route.RouteStatus).CLOSED}">폐선/운행 중단</td>

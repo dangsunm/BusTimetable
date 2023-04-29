@@ -1,5 +1,9 @@
 package com.bustime.module;
 
+import com.bustime.module.account.Account;
+import com.bustime.module.account.CurrentUser;
+import com.bustime.module.notification.NotificationRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,10 +11,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
+@RequiredArgsConstructor
 public class MainController {
 
+    private final NotificationRepository notificationRepository;
+
     @GetMapping("/")
-    public String indexPage (){
+    public String indexPage (@CurrentUser Account account, Model model) {
+        if (account != null) {
+            model.addAttribute(account);
+            model.addAttribute("nCount", notificationRepository.countByAccountAndChecked(account, false));
+        }
         return "index";
     }
 

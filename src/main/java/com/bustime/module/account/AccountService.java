@@ -9,7 +9,6 @@ import com.bustime.module.account.form.SignUpForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,7 +24,6 @@ import org.thymeleaf.context.Context;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -67,7 +65,7 @@ public class AccountService implements UserDetailsService {
         Account account = modelMapper.map(signUpForm, Account.class);
         account.generateEmailCheckToken();
         Account newAccount = accountRepository.save(account);
-        sendEmailLink(newAccount,
+        sendEmailLinkForVerify(newAccount,
                 "check-email-token",
                 "우리동네 버스 시간표 - 회원 가입 인증",
                 "우리동네 버스 시간표 사이트에 가입을 환영합니다. 서비스를 사용하려면 링크를 클릭하세요."
@@ -75,7 +73,7 @@ public class AccountService implements UserDetailsService {
         return newAccount;
     }
 
-   public void sendEmailLink(Account newAccount, String toLink, String subject, String msg ) {
+   public void sendEmailLinkForVerify(Account newAccount, String toLink, String subject, String msg ) {
 
         Context context = new Context();
         context.setVariable("link", "/"+toLink+"?token=" + newAccount.getEmailCheckToken() +
@@ -138,7 +136,7 @@ public class AccountService implements UserDetailsService {
         Account accountToReset = accountRepository.findByEmail(resetForm.getEmail());
         accountToReset.generatePasswordRestToken();
 
-        sendEmailLink(accountToReset,
+        sendEmailLinkForVerify(accountToReset,
                 "reset-password",
                 "우리동네 버스 시간표 - 비밀번호 재설정",
                 "비밀번호 재설정을 위해 링크를 클릭하세요, 본 링크는 24시간동안만 유효합니다."

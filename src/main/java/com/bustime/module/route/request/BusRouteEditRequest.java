@@ -1,12 +1,15 @@
 package com.bustime.module.route.request;
 
 import com.bustime.module.account.Account;
+import com.bustime.module.account.UserAccount;
 import com.bustime.module.route.BusRoute;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 @Entity
@@ -53,7 +56,15 @@ public class BusRouteEditRequest {
         this.modifiedDate = LocalDateTime.now();
     }
 
+    public boolean isRequester(UserAccount userAccount) {
+        return this.account.equals(userAccount.getAccount());
+    }
+
     public String path(){
         return id.toString();
+    }
+
+    public String getEncodedPath() {
+        return URLEncoder.encode(this.path(), StandardCharsets.UTF_8);
     }
 }

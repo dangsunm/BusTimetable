@@ -2,6 +2,10 @@ package com.bustime.module.route;
 
 import com.bustime.module.Tag.Tag;
 import com.bustime.module.account.Account;
+import com.bustime.module.route.event.NewRouteEditRequestEvent;
+import com.bustime.module.route.event.RouteCreationEvent;
+import com.bustime.module.route.event.RouteEditRequestUpdateEvent;
+import com.bustime.module.route.event.RouteUpdateEvent;
 import com.bustime.module.route.request.BusRouteEditRequest;
 import com.bustime.module.route.request.BusRouteEditRequestForm;
 import com.bustime.module.route.request.RouteEditRequestRepository;
@@ -15,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.validation.Valid;
 import java.util.Optional;
 import java.util.Set;
-
-import static com.bustime.module.route.request.RouteEditRequestStatus.RECIEVED;
 
 @Service
 @Transactional
@@ -32,6 +34,7 @@ public class BusRouteService {
         BusRoute newRoute = busRouteRepository.save(route);
         newRoute.addManager(account);
         newRoute.publish();
+        this.eventPublisher.publishEvent(new RouteCreationEvent(route));
         return newRoute;
     }
 
@@ -56,7 +59,7 @@ public class BusRouteService {
     public void updateRouteInfo(BusRoute route, BusRouteForm busRouteForm) {
         modelMapper.map(busRouteForm, route);
         route.publish();
-//        eventPublisher.publishEvent(new BusRouteUpdateEvent(route, "스터디 소개를 수정했습니다."));
+        eventPublisher.publishEvent(new RouteUpdateEvent(route, "노선의 새로운 시간표가 있습니다. 확인해보세요."));
     }
 
     private void checkIsManager(Account account, BusRoute route) {
@@ -120,9 +123,22 @@ public class BusRouteService {
         request.setRoute(route);
         request.publish();
         routeEditRequestRepository.save(request);
+        eventPublisher.publishEvent(new NewRouteEditRequestEvent(route, request, "새로운 노선 수정 요청이 등록되었습니다."));
     }
 
     public void updateRouteProcessUpdate(@Valid BusRouteEditRequestForm form, BusRouteEditRequest request) {
         modelMapper.map(form, request);
+        eventPublisher.publishEvent(new RouteEditRequestUpdateEvent(request, "노선 수정 요청에 답변이 등록되었습니다."));
+    }
+
+    public void removeEditRequest(BusRouteEditRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("해당 수정 요청이 존재하지 않습니다.");
+        }
+        routeEditRequestRepository.delete(request);
+    }
+
+    public int getCount() {
+        return (int) busRouteRepository.count();
     }
 }

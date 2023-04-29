@@ -6,6 +6,7 @@ import com.bustime.module.Tag.TagRepository;
 import com.bustime.module.Tag.TagService;
 import com.bustime.module.account.Account;
 import com.bustime.module.account.CurrentUser;
+import com.bustime.module.notification.NotificationRepository;
 import com.bustime.module.route.request.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -37,6 +39,7 @@ public class RouteController {
     private final BusRouteService busRouteService;
     private final BusRouteRepository busRouteRepository;
     private final RouteEditRequestRepository routeEditRequestRepository;
+    private final NotificationRepository notificationRepository;
     private final TagService tagService;
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
@@ -51,6 +54,7 @@ public class RouteController {
     {
         Page<BusRoute> routePage = busRouteRepository.findAll(pageable);
         model.addAttribute("routePage", routePage);
+        model.addAttribute("count", busRouteService.getCount());
 
         String searchCondition = "normal";
         model.addAttribute(searchCondition);
@@ -208,6 +212,8 @@ public class RouteController {
         busRouteService.RequestUpdateRoute(modelMapper.map(form, BusRouteEditRequest.class), account, route);
         attributes.addFlashAttribute("message", "노선 수정 요청을 전송했습니다.");
         String routeId = route.getId().toString();
+
+
         return "redirect:/route/" + URLEncoder.encode(routeId, StandardCharsets.UTF_8);
     }
 
@@ -265,5 +271,12 @@ public class RouteController {
         String requestId = request.getId().toString();
 
         return "redirect:/edit-request/" + URLEncoder.encode(requestId, StandardCharsets.UTF_8);
+    }
+
+    @PostMapping("/edit-request/{path}/delete")
+    public String removeEditRequest (@CurrentUser Account account, @PathVariable String path){
+        BusRouteEditRequest request = busRouteService.getEditRequest(path);
+        busRouteService.removeEditRequest(request);
+        return "redirect:/edit-request";
     }
 }

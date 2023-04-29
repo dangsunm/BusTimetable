@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -136,8 +135,13 @@ public class AccountController {
     @PostMapping("/lost-password")
     public String passwordResetRequestSubmit(@Valid PasswordResetRequestForm resetForm,
                                              Errors errors, RedirectAttributes attributes) {
+
+        Account account = accountRepository.findByEmail(resetForm.getEmail());
         if (errors.hasErrors()) {
             return "account/lost-password";
+        }
+        if (!account.canSendPasswordResetToken()){
+            attributes.addFlashAttribute("message", "아직 비밀번호 재전송 이메일을 전송할 수 없습니다.");
         }
         if (!accountService.isAccountExists(resetForm.getEmail())){
             attributes.addFlashAttribute("message", "해당 계정이 존재하지 않습니다.");
@@ -164,6 +168,11 @@ public class AccountController {
 
         if (!account.isValidToken(token)) {
             model.addAttribute("error", "wrong.token");
+            return view;
+        }
+
+        if (!account.validResetPasswordTiming()){
+            model.addAttribute("error", "token.expired");
             return view;
         }
 
@@ -222,7 +231,7 @@ public class AccountController {
             return "account/check-email";
         }
 
-        accountService.sendEmailLink(account,
+        accountService.sendEmailLinkForVerify(account,
                 "check-email-token",
                 "우리동네 버스 시간표 - 회원 가입 인증",
                 "우리동네 버스 시간표 사이트에 가입을 환영합니다. 서비스를 사용하려면 링크를 클릭하세요."

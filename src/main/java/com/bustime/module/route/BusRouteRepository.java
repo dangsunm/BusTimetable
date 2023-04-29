@@ -12,6 +12,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface BusRouteRepository extends JpaRepository<BusRoute, Long>, BusRouteRepositoryExtention {
 
+    //@EntityGraph(attributePaths = {"tags", "managers", "watchers"}, type = EntityGraph.EntityGraphType.LOAD)
     BusRoute getById (Long path);
 
     @EntityGraph(attributePaths = "watchers")
@@ -20,7 +21,11 @@ public interface BusRouteRepository extends JpaRepository<BusRoute, Long>, BusRo
     @EntityGraph(attributePaths = {"watchers"})
     List<BusRoute> findByWatchersContaining(Account account);
 
-    @EntityGraph(attributePaths = "tags")
+    @EntityGraph(attributePaths = {"tags", "watchers"})
     BusRoute findBusRouteWithTagsById(Long id);
+    @EntityGraph(attributePaths = {"managers", "watchers"})
+    BusRoute findBusRouteWithManagersAndWatchersById(Long id);
 
+    @EntityGraph(attributePaths = {"managers"})
+    BusRoute findBusRouteWithManagersById(Long id);
 }

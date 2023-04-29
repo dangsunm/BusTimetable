@@ -13,8 +13,17 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
 
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/route}" href="#">버스 리스트</a>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+          버스 리스트
+        </a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" th:href="@{/route}" href="#">목록</a>
+          <a class="dropdown-item" th:href="@{/route-city}" href="#">도시별</a>
+          <div sec:authorize="isAuthenticated()">
+            <a class="dropdown-item" th:href="@{'/new-route'}">새로운 노선</a>
+          </div>
+        </div>
       </li>
 
       <li class="nav-item dropdown">
@@ -22,9 +31,8 @@
           게시판
         </a>
         <div class="dropdown-menu">
-          <a class="dropdown-item" th:href="@{/notice}" href="#">공지사항</a>
-          <a class="dropdown-item" th:href="@{/board}" href="#">자유게시판</a>
-          <a class="dropdown-item" th:href="@{/edit-request}" href="#">수정 요청</a>
+          <a class="nav-link" th:href="@{/board}" href="#">자유게시판</a>
+          <a class="nav-link" th:href="@{/edit-request}" href="#">수정 요청</a>
         </div>
       </li>
 
@@ -44,7 +52,18 @@
           </form>
         </div>
       </li>
+      <li class="nav-item" sec:authorize="isAuthenticated()">
+        <a class="nav-link" th:href="@{/notifications}">
+          <span class="text-info" th:if="${!hasNotification}">
+            <i class="fa fa-bell-o" aria-hidden="true"></i><sup>0</sup>
+          </span>
+          <span class="text-info" th:if="${hasNotification}">
+            <i class="fa fa-bell" aria-hidden="true"></i><sup th:text="${nCount}">0</sup>
+          </span>
+        </a>
+      </li>
     </ul>
+
     <form th:action="@{/search/route}" class="form-inline my-2 my-lg-0" method="get">
       <input name="keyword"  class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
@@ -55,9 +74,8 @@
 <div th:fragment="settings-menu (currentMenu)" class="list-group">
   <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'profile'}? active" href="#" th:href="@{/settings/account}">설정 메인</a>
   <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'password'}? active" href="#" th:href="@{/settings/password}">패스워드</a>
-  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'tags'}? active" href="#" th:href="@{/settings/tags}">관심 주제</a>
+  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'tags'}? active" href="#" th:href="@{/settings/tags}">관심 지역/주제</a>
   <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'notifications'}? active" href="#" th:href="@{/settings/notifications}">알림</a>
-<!--  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'zones'}? active" href="#" th:href="@{/settings/zones}">활동 지역</a>-->
 </div>
 
 </html>

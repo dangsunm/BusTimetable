@@ -44,6 +44,12 @@
                 <button type="submit" class="btn btn-sm btn-outline-secondary me-2">답변하기</button>
             </form>
         </div>
+        <div class="row px-3 justify-content-center" sec:authorize="isAuthenticated()" th:if="${request.isRequester(#authentication.principal)}">
+            <form action="#" th:action="@{'/edit-request/' + ${path} + '/delete'}" method="post" novalidate>
+                <button type="submit" class="btn btn-sm btn-outline-secondary me-2">삭제하기</button>
+            </form>
+        </div>
+
     </div>
 
     <footer th:replace="header-footer.html :: footer"></footer>
