@@ -48,24 +48,14 @@ public class BoardService {
 
     public void removePost(String path) {
         Board post = this.boardRepository.getById(Long.parseLong(path));
+        commentRepository.deleteAll(commentRepository.findCommentsByBoard(post));
         boardRepository.delete(post);
     }
 
     public void updatePost(Board post, BoardForm boardForm) {
         modelMapper.map(boardForm, post);
         post.setModifiedDate(LocalDateTime.now());
-//        eventPublisher.publishEvent(new BusRouteUpdateEvent(route, "스터디 소개를 수정했습니다."));
     }
 
-    public Comment createNewComment(Comment comment, Account account, Long id) {
-        Comment newComment = commentRepository.save(comment);
-        comment.setAccount(account);
-        comment.setBoard(boardRepository.getById(id));
-        newComment.publish();
-        return newComment;
-    }
 
-    public void deleteComment(Long cid){
-        commentRepository.deleteById(cid);
-    }
 }
