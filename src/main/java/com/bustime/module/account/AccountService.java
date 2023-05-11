@@ -4,6 +4,7 @@ import com.bustime.config.AppProperties;
 import com.bustime.config.mail.EmailMessage;
 import com.bustime.config.mail.EmailService;
 import com.bustime.module.Tag.Tag;
+import com.bustime.module.account.form.NotificationsForm;
 import com.bustime.module.account.form.PasswordResetRequestForm;
 import com.bustime.module.account.form.SignUpForm;
 import lombok.RequiredArgsConstructor;
@@ -153,5 +154,10 @@ public class AccountService implements UserDetailsService {
 
     public boolean isAdmin (Account account){
         return account.getUsertype().equals("A");
+    }
+
+    public void updateNotifications(Account account, NotificationsForm notifications) {
+        modelMapper.map(notifications, account);
+        accountRepository.save(account);
     }
 }

@@ -60,7 +60,7 @@ public class BoardController {
         model.addAttribute(new CommentForm());
 
         boardService.increaseViewCount(path);
-        List<Comment> comments = commentRepository.findCommentsByBoard(board);
+        List<Comment> comments = commentRepository.findCommentsByBoardOrderByCreatedDateDesc(board);
         model.addAttribute("comments", comments);
         return "board/view";
     }
@@ -151,15 +151,6 @@ public class BoardController {
         MessageDto message = new MessageDto("댓글 삭제가 완료되었습니다.", pathURL, RequestMethod.GET, null);
         return messageHandler.showMessageAndRedirect(message, model);
     }
-
-    // 댓글 리스트 조회
-//    @GetMapping("/board/{path}/comment")
-//    public List<Comment> findAllComment(@PathVariable String path) {
-//        Board board = boardService.getBoard(path);
-//        List<Comment> comments = commentRepository.findCommentsByBoard(board);
-//
-//        return comments;
-//    }
 
     @GetMapping("/board/{path}/comment/{id}")
     public @ResponseBody CommentForm findCommentById(@PathVariable String path, @PathVariable final Long id) {

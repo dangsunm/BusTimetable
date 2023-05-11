@@ -9,7 +9,10 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    List<Comment> findCommentsByBoard (Board board);
+    List<Comment> findCommentsByBoardOrderByCreatedDateDesc(Board board);
+
+    List<Comment> findCommentsByBoard(Board board);
 
     Comment findCommentById(Long id);
+
 }

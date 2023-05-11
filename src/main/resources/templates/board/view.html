@@ -107,9 +107,6 @@
             <div class="pop_container">
                 <table>
                     <tr>
-                        <th><p class="text-left font-weight-bold">내용 필수 입력</p></th>
-                    </tr>
-                    <tr>
                         <td><textarea id="modalComment" name="modalComment" placeholder="수정할 내용을 입력해 주세요."></textarea></td>
                     </tr>
                 </table>
@@ -125,10 +122,6 @@
     <footer th:replace="header-footer.html :: footer"></footer>
     <script th:replace="fragments.html :: date-time"></script>
     <script type="application/javascript">
-        $(document).ready(function(){
-
-        })
-
         // 댓글 길이 카운팅
         function countingLength(content) {
             if (content.value.length > 250) {
@@ -138,7 +131,6 @@
             }
             document.getElementById('counter').innerText = content.value.length + '/250자';
         }
-
 
         // 댓글 수정 팝업 open
         function openCommentUpdatePopup(id) {
@@ -195,7 +187,6 @@
                 }
             })
         }
-
         /*]]>*/
 
         // 레이어 팝업(기본)

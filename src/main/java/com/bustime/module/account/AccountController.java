@@ -4,10 +4,7 @@ import com.bustime.module.Tag.Tag;
 import com.bustime.module.Tag.TagForm;
 import com.bustime.module.Tag.TagRepository;
 import com.bustime.module.Tag.TagService;
-import com.bustime.module.account.form.PasswordForm;
-import com.bustime.module.account.form.PasswordResetRequestForm;
-import com.bustime.module.account.form.SignUpForm;
-import com.bustime.module.account.form.UsernameForm;
+import com.bustime.module.account.form.*;
 import com.bustime.module.account.validator.PasswordFormValidator;
 import com.bustime.module.account.validator.UserNameValidator;
 import com.bustime.module.route.BusRoute;
@@ -273,5 +270,26 @@ public class AccountController {
 
         accountService.removeTag(account, tag);
         return ResponseEntity.ok().build();
+    }
+
+    /* 알림관련 */
+    @GetMapping("settings/notifications")
+    public String updateNotificationsForm(@CurrentUser Account account, Model model) {
+        model.addAttribute(account);
+        model.addAttribute(modelMapper.map(account, NotificationsForm.class));
+        return "account/settings/notifications";
+    }
+
+    @PostMapping("settings/notifications")
+    public String updateNotifications(@CurrentUser Account account, @Valid NotificationsForm notifications, Errors errors,
+                                      Model model, RedirectAttributes attributes) {
+        if (errors.hasErrors()) {
+            model.addAttribute(account);
+            return "account/settings/notifications";
+        }
+
+        accountService.updateNotifications(account, notifications);
+        attributes.addFlashAttribute("message", "알림 설정을 변경했습니다.");
+        return "redirect:/settings/notifications";
     }
 }

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="header-footer.html :: head"></head>
+<nav th:replace="navbar.html :: navbar"></nav>
+<div class="alert alert-warning" role="alert" th:if="${account != null && !account.emailVerified}">
+    가입을 완료하려면 <a href="#" th:href="@{/check-email}" class="alert-link">계정 인증 이메일을 확인</a>하세요.
+</div>
+<body class="bg-light">
+<div class="container">
+    <div class="row mt-5 justify-content-center">
+        <div class="col-2">
+            <div th:replace="navbar.html :: settings-menu(currentMenu='notifications')"></div>
+        </div>
+        <div class="col-8">
+            <div th:if="${message}" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+                <span th:text="${message}">완료</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="row">
+                <h2 class="col-12">알림 설정</h2>
+            </div>
+            <div class="row mt-3" th:fragment="profile-form">
+                <form class="col-12" action="#" th:action="@{/settings/notifications}" th:object="${notificationsForm}" method="post" novalidate>
+                    <div class="alert alert-light" role="alert">
+                        이메일로 알림을 받을지에 대한 여부를 설정하세요.
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-switch custom-control-inline">
+                            <input type="checkbox" th:field="*{EmailNotification}" class="custom-control-input" id="EmailNotification">
+                            <label class="custom-control-label" for="EmailNotification">이메일로 알림 받기</label>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light" role="alert">
+                        연관된 태그를 확인해 노선 등록 알림을 받을지 선택하세요.
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-switch custom-control-inline">
+                            <input type="checkbox" th:field="*{NewRouteNotification}" class="custom-control-input" id="NewRouteNotification">
+                            <label class="custom-control-label" for="NewRouteNotification">태그와 연계하여 새로운 노선 시간표 등록 알림 받기</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-outline-primary" type="submit" aria-describedby="submitHelp">저장하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="header-footer.html :: footer"></div>
+
+</div>
+</body>
+</html>

@@ -27,7 +27,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
+        http.csrf().ignoringAntMatchers("/board/**");
+
         http.authorizeRequests()
                 .mvcMatchers("/", "/login", "/sign-up", "/check-email-token",
                         "/lost-password", "/check-email-login", "/login-link", "/route", "/board",

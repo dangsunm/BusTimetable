@@ -2,6 +2,7 @@ package com.bustime.module.account;
 
 import com.bustime.module.Tag.Tag;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -43,6 +44,12 @@ public class Account {
     private String passwordResetToken;
 
     private LocalDateTime passwordResetTokenGeneratedAt;
+
+    @ColumnDefault("true")
+    private boolean EmailNotification;
+
+    @ColumnDefault("true")
+    private boolean NewRouteNotification;
 
     @ManyToMany
     private Set<Tag> tags = new HashSet<>();
